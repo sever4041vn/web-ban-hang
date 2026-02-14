@@ -1,0 +1,58 @@
+body {
+    font-family: 'Times New Roman', Times, serif;
+}
+
+
+/* Chỉ áp dụng khi In */
+@media print {
+    /* Ẩn các thành phần không cần thiết */
+    .no-print, .navbar, .btn, footer{
+        display: none !important;
+    }
+
+    /* Bỏ lề mặc định của trình duyệt */
+    @page {
+        margin: 0cm;
+        size: auto; /* Hoặc 'A5 landscape' hoặc 'K80' tùy máy in */
+    }
+
+    body {
+        background: white !important;
+        margin: 0;
+        padding: 0;
+    }
+    tfoot {
+        display: table-row-group; /* Chuyển về dòng bình thường để không lặp lại */
+    }
+    .only-last-page {
+        /* Đảm bảo dòng tổng tiền không bị tách làm đôi giữa 2 trang */
+        page-break-inside: avoid; 
+    }
+    .invoice-wrapper {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .invoice-box {
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Đảm bảo bảng hiển thị rõ nét */
+    /* .table th {
+        background-color: #f8f9fa !important;
+        -webkit-print-color-adjust: exact;
+    }
+
+    .text-primary {
+        color: #0d6efd !important;
+        -webkit-print-color-adjust: exact;
+    } */
+}
+
+/* Hiển thị trên màn hình (Preview) */
+.invoice-box {
+    max-width: 800px;
+    margin: 0 auto;
+}
