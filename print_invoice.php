@@ -27,7 +27,7 @@ if (!$order) {
 }
 
 // 3. Truy vấn chi tiết các mặt hàng trong hóa đơn
-$itemStmt = $pdo->prepare("SELECT oi.*, p.name, p.sku, p.unit 
+$itemStmt = $pdo->prepare("SELECT oi.*, p.sku
                            FROM order_items oi 
                            JOIN products p ON oi.product_id = p.id 
                            WHERE oi.order_id = ?");
@@ -82,6 +82,7 @@ $items = $itemStmt->fetchAll();
                 <tr class="text-center">
                     <th class="p-0">STT</th>
                     <th class="p-0">Tên hàng</th>
+                    <th class="p-0">ĐVT</th>
                     <th class="p-0">SL</th>
                     <th class="p-0">Đơn giá</th>
                     <th class="p-0">Thành tiền</th>
@@ -96,6 +97,7 @@ $items = $itemStmt->fetchAll();
                 <tr>
                     <td class="text-center p-0"><?=$stt?></td>
                     <td class="p-0"><?= $item['name'] ?><br></td>
+                    <td class="text-center p-0"><?= $item['unit'] ?></td>
                     <td class="text-center p-0"><?= $item['quantity'] ?></td>
                     <td class="text-end p-0"><?= number_format($item['selling_price'], 0, ',', '.') ?></td>
                     <td class="text-end p-0"><?= number_format($item['subtotal'], 0, ',', '.') ?></td>
@@ -104,11 +106,11 @@ $items = $itemStmt->fetchAll();
             </tbody>
             <div class="only-last-page">
                 <tr>
-                    <td colspan="4" class="p-0 text-end fw-bold h10">Tổng toa hàng:</td>
+                    <td colspan="5" class="p-0 text-end fw-bold h10">Tổng toa hàng:</td>
                     <td class="p-0 text-end fw-bold h10"><?= number_format($order['final_amount'], 0, ',', '.') ?></td>
                 </tr>
                 <tr class="no-print">
-                    <td colspan="4" class="p-0 text-end fw-bold h10">
+                    <td colspan="5" class="p-0 text-end fw-bold h10">
                         <button style="font-size: smaller !important;" onclick="showProfit()" class="btn">Hiện lợi nhuận</button>
                         Lợi nhuận:
                     </td>
@@ -116,7 +118,7 @@ $items = $itemStmt->fetchAll();
                     <td id="profit-show" style="display: none;" class="p-0 text-end fw-bold h10"><?= number_format($order['profit_amount'], 0, ',', '.') ?></td>
                 </tr>
                 <tr>
-                    <td colspan="5" class="border-0 p-0 text-end fw-bold h10">
+                    <td colspan="6" class="border-0 p-0 text-end fw-bold h10">
                         <?php
 
                             $timestamp = strtotime($order['created_at']);

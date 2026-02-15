@@ -43,6 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // 5. Lặp qua từng sản phẩm để xử lý
         foreach ($items as $item) {
             $p_id = $item['product_id'];
+            $name = $item['name'];
             $unit = $item['unit'];
             $qty = $item['quantity'];
             $cost_price = $item['cost_price'];
@@ -50,9 +51,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $subtotal = $qty * $selling_price;
 
             // --- LƯU CHI TIẾT HÓA ĐƠN ---
-            $sqlItem = "INSERT INTO order_items (order_id, product_id, unit, quantity, cost_price, selling_price, subtotal) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?)";
-            $pdo->prepare($sqlItem)->execute([$order_id, $p_id, $unit, $qty, $cost_price, $selling_price, $subtotal]);
+            $sqlItem = "INSERT INTO order_items (order_id, product_id, name, unit, quantity, cost_price, selling_price, subtotal) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            $pdo->prepare($sqlItem)->execute([$order_id, $p_id, $name, $unit, $qty, $cost_price, $selling_price, $subtotal]);
 
             // --- TRỪ KHO SẢN PHẨM ---
             $sqlUpdateStock = "UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ?";

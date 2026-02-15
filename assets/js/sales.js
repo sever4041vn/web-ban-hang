@@ -2,30 +2,34 @@ const productIdSelect = document.getElementById("productSelect");
 const customerIdSelect = document.getElementById("customerSelect");
 const responseMessage = document.getElementById("response-message");
 
-
-const productSelect = async () => {
-    let products = []
-    let productOption = '<option data-name="" data-cost-price="" data-selling-price="" data-stock="" data-unit="" value=""></option>';
-    try {
-        const response = await fetch(`actions/get_product.php`);
-        const result = await response.json(); // Đợi phản hồi JSON từ PHP
-        if (result.status === 'success') {
-            products= JSON.parse(result.message);
-        } else {
-            products = [];
-        }
-    } catch (error) {
-        products = [];
+document.addEventListener("keypress",(e)=>{
+    if (e.key=="Enter") {
+        addToTable();
     }
-    for (let i = 0; i < products.length; i++) {
-        productOption = productOption + `
-        <option data-name="${products[i]["name"]}" data-cost-price="${products[i]["cost_price"]}" data-selling-price="${products[i]["selling_price"]}" data-stock="${products[i]["stock_quanity"]}" data-unit="${products[i]["unit"]}" value="${products[i]["id"]}">${products[i]["sku"]} - ${products[i]["name"]}</option>
-        `
-    }
-    productIdSelect.innerHTML = productOption;
-}
-productIdSelect.addEventListener("click",productSelect);
-productSelect()
+})
+// const productSelect = async () => {
+//     let products = []
+//     let productOption = '<option data-name="" data-cost-price="" data-selling-price="" data-stock="" data-unit="" value=""></option>';
+//     try {
+//         const response = await fetch(`actions/get_product.php`);
+//         const result = await response.json(); // Đợi phản hồi JSON từ PHP
+//         if (result.status === 'success') {
+//             products= JSON.parse(result.message);
+//         } else {
+//             products = [];
+//         }
+//     } catch (error) {
+//         products = [];
+//     }
+//     for (let i = 0; i < products.length; i++) {
+//         productOption = productOption + `
+//         <option data-name="${products[i]["name"]}" data-cost-price="${products[i]["cost_price"]}" data-selling-price="${products[i]["selling_price"]}" data-stock="${products[i]["stock_quanity"]}" data-unit="${products[i]["unit"]}" value="${products[i]["id"]}">${products[i]["sku"]} - ${products[i]["name"]}</option>
+//         `
+//     }
+//     productIdSelect.innerHTML = productOption;
+// }
+// productIdSelect.addEventListener("click",productSelect);
+// productSelect()
 
 const customerSelect =  async () => {
     let customers = []
@@ -49,51 +53,99 @@ const customerSelect =  async () => {
     customerIdSelect.innerHTML = customerOption;
 }
 customerSelect()
+const addToTable = () => {
+    cost_price = 0;
+    selling_price = 0;
 
-function addToTable() {
-    const select = document.getElementById('productSelect');
-    const productId = select.value;
-    if (!productId) return;
-
-    const option = select.options[select.selectedIndex];
-
-    const name = option.getAttribute('data-name');
-    const cost_price = option.getAttribute('data-cost-price');
-    const selling_price = option.getAttribute('data-selling-price');
-    const stock = option.getAttribute('data-stock');
-    const unit = option.getAttribute('data-unit');
-
-
-    // Kiểm tra nếu sản phẩm đã có trong bảng thì không thêm dòng mới mà báo lỗi
-    if (document.querySelector(`tr[data-id="${productId}"]`)) {
-        alert("Sản phẩm này đã có trong danh sách!");
-        return;
-    }
-
-    const row = `
-        <tr data-unit="${unit}" data-id="${productId}">
-            <td>${name}</td>
-            <td>
-                ${unit}
-            </td>
-            <td>
-                <input type="number" class="form-control qty-input" value="1" min="1" max="${stock}" onchange="calculateRow(this)">
-            </td>
-            <td>
-                <input style="display:none;" type="number" class="form-control cost-price-input" value="${cost_price}" onchange="calculateRow(this)">
-                <input type="number" class="form-control selling-price-input" value="${selling_price}" onchange="calculateRow(this)">
-            </td>
-            <td class="subtotal fw-bold">${Number(selling_price).toLocaleString()} ₫</td>
-            <td>
-                <button class="btn btn-sm btn-outline-danger" onclick="removeRow(this)">
-                    Xóa
-                </button>
-            </td>
-        </tr>
-    `;
-    document.getElementById('invoiceItems').insertAdjacentHTML('beforeend', row);
-    updateTotal();
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+                            <td class="d-none">
+                                <input class="id form-control" type="number">
+                            </td>
+                            <td class="position-relative">
+                                <input oninput="searchProducts(event)" class="name form-control" type="text">
+                                <div style="display: none;" class="z-3 l-0 w-100 search-box bg-white position-absolute row"></div>
+                            </td>
+                            <td>
+                                <input class="unit form-control" type="text">
+                            </td>
+                            <td>
+                                <input type="number" class="form-control qty-input" value="1" min="1" onchange="calculateRow(this)">
+                            </td>
+                            <td>
+                                <input style="display:none;" type="number" class="form-control cost-price-input" value="${cost_price}" onchange="calculateRow(this)">
+                                <input type="number" class="form-control selling-price-input" value="${selling_price}" onchange="calculateRow(this)">
+                            </td>
+                                <td class="subtotal fw-bold">${Number(selling_price).toLocaleString()} ₫</td>
+                            <td>                 
+                                <button class="btn btn-sm btn-outline-danger" onclick="removeRow(this)">Xóa</button>
+                            </td>
+                    `;
+    document.getElementById('invoiceItems').appendChild(tr);
+    tr.querySelector(".name").addEventListener("focusin", (e)=>toggleShowSearchBox(e.target))
+    tr.querySelector(".name").addEventListener("focusout", (e)=>toggleShowSearchBox(e.target))
+    tr.querySelector(".name").focus();
 }
+
+const toggleShowSearchBox = (target) => {
+    let searchBox =target.parentNode.querySelector(".search-box");
+    if(searchBox.style.display == "none"){
+        searchBox.style.display = "block"
+    }else{
+        setTimeout(() => {
+            searchBox.style.display = "none"
+        }, 100);
+    };
+}
+
+const searchProducts = async (e) => {
+    let searchBox = e.target.parentNode.querySelector(".search-box");
+    const search = e.target.value;
+    const id = e.target.closest("tr").querySelector(".id");
+    const cost_price = e.target.closest("tr").querySelector(".cost-price-input");
+    id.value = 1;
+    cost_price.value =0;
+    let products = []
+    let productOption = '';
+    try {
+        const response = await fetch(`actions/get_product.php?search=${search}`);
+        const result = await response.json(); // Đợi phản hồi JSON từ PHP
+        if (result.status === 'success') {
+            products= JSON.parse(result.message);
+        } else {
+            products = [];
+        }
+    } catch (error) {
+        products = [];
+    }
+    for (let i = 0; i < products.length; i++) {
+        productOption = productOption + `
+        <button onclick='addToRow(event, [${products[i]["id"]},"${products[i]["name"].replace(/\n/g, "")}","${products[i]["unit"]}",${products[i]["cost_price"]},${products[i]["selling_price"]}])' class="btn border btn-primary">${products[i]["sku"]} - ${products[i]["name"]}</button>
+        `
+    }
+    if (productOption=="") {
+        searchBox.innerHTML = `<p>Không tìm thấy sản phẩm</p>`;
+    }else{
+        searchBox.innerHTML = productOption;
+    }
+}
+
+const addToRow = (e, data) => {
+    const row = e.target.closest('tr');
+    const id = row.querySelector(".id");
+    const name = row.querySelector(".name");
+    const unit = row.querySelector(".unit");
+    const cost_price = row.querySelector(".cost-price-input")
+    const selling_price = row.querySelector(".selling-price-input");
+    id.value = data[0];
+    name.value = data[1];
+    unit.value = data[2];
+    cost_price.value = data[3];
+    selling_price.value = data[4];
+    console.log(data)
+    calculateRow(e.target);
+    addToTable();
+} 
 
 function removeRow(btn) {
     btn.closest('tr').remove();
@@ -120,23 +172,30 @@ function updateTotal() {
 }
 
 async function submitInvoice() {
+    let fail = false;
     const customer = {
         customer_id: customerIdSelect.value,
         address: document.getElementById("address").value
     };
     const items = [];
     document.querySelectorAll('#invoiceItems tr').forEach(row => {
+        if (row.querySelector('.name').value==""||row.querySelector('.unit').value==""||row.querySelector('.qty-input').value==""||row.querySelector('.selling-price-input').value=="") {
+            console.log(row.querySelector('.name').value)
+            fail = true;
+            return;
+        }
         items.push({
-            product_id: row.getAttribute('data-id'),
-            unit: row.getAttribute('data-unit'),
+            product_id: row.querySelector('.id').value,
+            name: row.querySelector('.name').value,
+            unit: row.querySelector('.unit').value,
             quantity: row.querySelector('.qty-input').value,
             cost_price: row.querySelector('.cost-price-input').value,
             selling_price: row.querySelector('.selling-price-input').value
         });
     });
 
-    if (items.length === 0) {
-        alert("Vui lòng thêm ít nhất một sản phẩm!");
+    if (fail) {
+        responseMessage.innerHTML = `<div class="alert alert-danger">Vui lòng nhập hết thông tin các dòng hoặc xóa dòng đó</div>`;
         return;
     }
     const formData = new FormData;
@@ -150,8 +209,6 @@ async function submitInvoice() {
     
         const result = await response.json();
         if (result.status === 'success') {
-            // alert("Tạo hóa đơn thành công!");
-            // window.location.href = `print_invoice.php?id=${result.order_id}`;
             responseMessage.innerHTML = `<div class="alert alert-success">Tạo hóa đơn thành công!</div>`;
             window.location.href = `print_invoice.php?invoice_no=${result.invoice_no}`;
 
@@ -160,6 +217,6 @@ async function submitInvoice() {
         }
         
     } catch (error) {
-        responseMessage.innerHTML = `<div class="alert alert-danger">Lỗi kết nối hệ thống!</div>`;
+        responseMessage.innerHTML = `<div class="alert alert-danger">${result.message}</div>`;
     }
 }
