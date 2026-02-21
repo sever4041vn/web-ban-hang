@@ -19,6 +19,9 @@ async function loadOrders() {
                         <a href="print_invoice.php?invoice_no=${o.invoice_no}" class="btn btn-sm btn-outline-secondary" title="Xem & In">
                             <i class="bi bi-printer"></i> Xem lại
                         </a>
+                        <a href="order.php?invoice_no=${o.invoice_no}" class="btn btn-sm btn-success" title="Xem & In">
+                            <i class="bi bi-printer"></i> Sửa
+                        </a>
                     </td>
                 </tr>
             `;

@@ -46,10 +46,11 @@ $items = $itemStmt->fetchAll();
 <body onload="window.print()"> <div class="invoice-wrapper container my-5">
     <div class="text-end no-print mb-4">
         <button onclick="window.print()" class="btn btn-primary">In lại</button>
-        <a href="sales.php" class="btn btn-secondary">Quay lại bán hàng</a>
+        <a href="sales.php" class="btn btn-secondary">Tạo hóa đơn</a>
+        <a href="order.php?invoice_no=<?= $order['invoice_no']?>" class="btn btn-success">Sửa hóa đơn</a>
     </div>
 
-    <div class="invoice-box p-4 border shadow-sm bg-white">
+    <div style="font-size: smaller;" class="invoice-box p-4 border shadow-sm bg-white">
         <div class="row">
             <h3 class="fw-bold text-uppercase text-center mb-0">CÔNG TY TNHH MTV VÀ DV KHÁNH HỒNG</h3>
             <h4 class="fw-bold text-center d-flex justify-content-center">
