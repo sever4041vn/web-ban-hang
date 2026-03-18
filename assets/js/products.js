@@ -39,7 +39,7 @@ const getProducts = async (search) => {
                 </td>
                 <td>
                     <button onclick="showHideProfit(${product["id"]})" class="btn btn-sm btn-outline-secondary">Xem giá nhập</button>
-                    <button onclick="deleteProduct('${product["sku"]}','${product["name"]}',${product["id"]})" class="btn btn-sm btn-danger">Xóa</button>
+                    <button onclick="deleteProduct('${product["sku"]}','${product["name"]}','${product["id"]}')" class="btn btn-sm btn-danger">Xóa</button>
                 </td>
                 </tr>`;
             })

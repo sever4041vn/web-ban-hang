@@ -10,35 +10,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         echo json_encode(['status' => 'error', 'message' => "Vui lòng nhập đầy đủ trường thông tin"]);
         die;
     }
-
+    $pdo->beginTransaction();
     try {
-        // 1. Kiểm tra sản phẩm đã có tồn tại trong hoá đơn 
-        $Check = $pdo->prepare("SELECT id FROM order_items WHERE id = ?");
-        $Check->execute([$id]);
+
+        //Thay đổi dữ liệu
+        $stmtUpdate = $pdo->prepare("UPDATE `order_items` SET `product_id`= 0 WHERE `product_id` = ?");
+        $stmtUpdate->execute([$id]);
         
-        if ($Check->rowCount() > 0) {
-            $sqlUpdate = "UPDATE `order_items` SET `product_id`= 0 WHERE `product_id` = ?;
-                            DELETE FROM `inventory_log` WHERE `product_id` = ?;
-            
-            ";
-            $stmtUpdate = $pdo->prepare($sqlUpdate);
-            $sqlUpdate->execute([$id,$id]);
-            
-            if(!$stmtUpdate){
-                echo json_encode(['status' => 'error', 'message' => "Xóa không thành công"]);
-                die;
-            }
+        $stmtDelete = $pdo->prepare("DELETE FROM `inventory_log` WHERE `product_id` = ?;");
+        $stmtDelete->execute([$id]);
+
+        if(!$stmtUpdate||!$stmtDelete){
+            echo json_encode(['status' => 'error', 'message' => "Xóa không thành công"]);
+            die;
         }
         
         // 3. Xóa
-        $delete = $pdo->prepare("DELETE FROM products WHERE sku = ? AND name = ?");
-        $delete->execute([$sku,$name]);
-
+        $delete = $pdo->prepare("DELETE FROM products WHERE id = ?");
+        $delete->execute([$id]);
+        $pdo->commit();
         echo json_encode(['status' => 'success', 'message' => "Xóa thành công"]);
         die;
 
 
     } catch (PDOException $e) {
+        $pdo->commit();
         echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
     }
 }
