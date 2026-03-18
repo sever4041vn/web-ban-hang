@@ -1,4 +1,6 @@
 const addProduct = document.getElementById("add-product");
+const addProductFile = document.getElementById("add-product-file");
+
 const responseMessage = document.getElementById("response-message");
 
 const costPrice = document.getElementById("cost_price");
@@ -19,9 +21,9 @@ costPrice.addEventListener("input",profitCount);
 sellingPrice.addEventListener("input",profitCount);
 
 //Thêm sản phẩm
-addProduct.addEventListener("submit", async (e)=>{
+addProductFile.addEventListener("submit", async (e)=>{
     e.preventDefault();
-    const formData = new FormData(addProduct);
+    const formData = new FormData(addProductFile);
 
     try {
         const response = await fetch('actions/add_product.php', {
@@ -36,6 +38,7 @@ addProduct.addEventListener("submit", async (e)=>{
         } else {
             responseMessage.innerHTML = `<div class="alert alert-danger">${result.message}</div>`;
         }
+        profitCount()
     } catch (error) {
         console.log(error)
         responseMessage.innerHTML = `<div class="alert alert-danger">Lỗi kết nối hệ thống!</div>`;

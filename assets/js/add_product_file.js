@@ -22,7 +22,7 @@ addProductFile.addEventListener("submit", async (e)=>{
             responseMessageFile.appendChild(div);
             setTimeout(() => {
                 div.remove();
-            }, 3000);
+            }, 10000);
         } else {
             const div = document.createElement("div")
             div.className = "alert alert-danger";

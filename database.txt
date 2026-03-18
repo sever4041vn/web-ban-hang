@@ -7,6 +7,9 @@ CREATE TABLE categories (
     name VARCHAR(100) NOT NULL,
     description TEXT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+INSERT INTO `categories`(`name`) VALUES ("Điện");
+INSERT INTO `categories`(`name`) VALUES ("Nước");
+INSERT INTO `categories`(`name`) VALUES ("Linh tinh");
 
 -- 1.2. Đơn vị tính sản phẩm
 CREATE TABLE unit (
@@ -27,7 +30,7 @@ CREATE TABLE products (
     unit VARCHAR(20) DEFAULT 'Cái', -- Đơn vị tính
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-INSERT INTO `products`(`sku`) VALUES (0)
+INSERT INTO `products`(`sku`) VALUES (0);
 
 -- 3. Bảng nhà cung cấp (Dành cho việc nhập hàng)
 CREATE TABLE suppliers (

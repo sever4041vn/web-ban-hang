@@ -2,12 +2,12 @@
 require_once '../config/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $sku = $_POST['sku'];
-    $name = $_POST['name'];
-    $category_id = $_POST['category'];
-    $cost_price = $_POST['cost_price'];
-    $selling_price = $_POST['selling_price'];
-    $unit = $_POST['unit'];
+    $sku = isset($_POST['sku'])?$_POST['sku']:"";
+    $name = isset($_POST['name'])?$_POST['name']:"";
+    $category_id = isset($_POST['category'])?$_POST['category']:0;
+    $cost_price = isset($_POST['cost_price'])?$_POST['cost_price']:0;
+    $selling_price = isset($_POST['selling_price'])?$_POST['selling_price']:0;
+    $unit = isset($_POST['unit'])?$_POST['unit']:"";
 
     if ($sku=="" || $name =="" || $category_id=="" || $cost_price =="" || $selling_price =="" || $unit=="") {
         echo json_encode(['status' => 'error', 'message' => "Vui lòng nhập đầy đủ trường thông tin"]);
