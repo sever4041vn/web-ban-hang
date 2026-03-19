@@ -5,7 +5,7 @@ try {
     $search = $_GET['search'] ?? '';
     //Lấy sản phẩm
     if ($search) {
-        $stmt = $pdo->prepare("SELECT * FROM products WHERE (name LIKE ? OR sku LIKE ? OR NOT id = 1) ORDER BY id DESC");
+        $stmt = $pdo->prepare("SELECT * FROM products WHERE (name LIKE ? OR sku LIKE ?) ORDER BY id DESC");
         $stmt->execute(["%$search%", "%$search%"]);
     } else {
         $stmt = $pdo->query("SELECT * FROM products WHERE NOT id = 1 ORDER BY id DESC");
