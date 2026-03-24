@@ -155,13 +155,16 @@ function calculateRow(input) {
 
 function updateTotal() {
     let total = 0;
+    const paid = document.getElementById("paidDisplay").querySelector(".paid-input").value
+    // console.log(document.getElementById("paidDisplay").querySelector(".paid-input").value)
     document.querySelectorAll('#invoiceItems tr').forEach(row => {
         const qty = row.querySelector('.qty-input').value;
         const selling_price = row.querySelector('.selling-price-input').value;
         total += qty * selling_price;
     });
-    document.getElementById('totalDisplay').innerText = total.toLocaleString() + " ₫";
+    document.getElementById('totalDisplay').innerText = (total-paid).toLocaleString() + " ₫";
 }
+
 const updateTable = async () => {
     const parsedUrl = new URL(window.location.href);
     const params = new URLSearchParams(parsedUrl.search);
@@ -179,6 +182,8 @@ const updateTable = async () => {
             if (orderJson.id) {
                 responseMessage.innerHTML = ``;
                 addToTable(itemsJson);
+                document.getElementById("paidDisplay").querySelector(".paid-input").value = orderJson.paid_amount
+                updateTotal()
             }else{
                 responseMessage.innerHTML = `<div class="alert alert-danger">Không tìm thấy đơn hàng!</div>`;
             }
@@ -213,9 +218,13 @@ async function submitInvoice() {
         responseMessage.innerHTML = `<div class="alert alert-danger">Vui lòng nhập hết thông tin các dòng hoặc xóa dòng đó</div>`;
         return;
     }
+    const order = {
+        paid : document.getElementById("paidDisplay").querySelector(".paid-input").value
+    }
     const formData = new FormData;
     formData.append("invoice_no",invoice_no)
     formData.append("items",JSON.stringify(items))
+    formData.append("order", JSON.stringify(order))
     try {
         const response = await fetch('actions/update_order.php', {
             method: 'POST',

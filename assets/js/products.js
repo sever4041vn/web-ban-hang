@@ -1,18 +1,21 @@
 const productsDiv = document.getElementById("products");
 const search = document.getElementById("search");
 let searchValue = search.value
+let page = 1
 search.addEventListener("input", ()=>{
     searchValue = search.value
     getProducts(searchValue)
 })
+
+
 //Lấy sản phẩm
-const getProducts = async (search) => {
+const getProducts = async (search, page) => {
     try {
         let response;
         if (search!="") {
             response = await fetch(`actions/get_product.php?search=${search}`);
         }else{
-            response = await fetch(`actions/get_product.php`);
+            response = await fetch(`actions/get_product.php?page=${page}`);
         }
 
         const result = await response.json(); // Đợi phản hồi JSON từ PHP
@@ -54,6 +57,19 @@ const getProducts = async (search) => {
         productsDiv.innerHTML = `<div class="alert alert-danger">Lỗi kết nối hệ thống!</div>`;
     }
 }
+
+const toPage = (action) => {
+    if (action == "add") {
+        page -= 1
+    }else if (action == "minus"){
+        page += 1
+    }else if (action == "go"){
+        page = document.getElementById("gotopage").value
+    }
+    document.getElementById("gotopage").value = page
+    getProducts (searchValue,page)
+}
+toPage("action")
 //Xem giá nhập
 const showHideProfit = (id) => {
     const div =document.getElementById(id).getElementsByClassName("cost_price")[0];

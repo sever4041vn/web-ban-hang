@@ -142,7 +142,7 @@ const addToRow = (e, data) => {
     unit.value = data[2];
     cost_price.value = data[3];
     selling_price.value = data[4];
-    console.log(data)
+    // console.log(data)
     calculateRow(e.target);
     addToTable();
 } 
@@ -163,24 +163,26 @@ function calculateRow(input) {
 
 function updateTotal() {
     let total = 0;
+    const paid = document.getElementById("paidDisplay").querySelector(".paid-input").value
+    // console.log(document.getElementById("paidDisplay").querySelector(".paid-input").value)
     document.querySelectorAll('#invoiceItems tr').forEach(row => {
         const qty = row.querySelector('.qty-input').value;
         const selling_price = row.querySelector('.selling-price-input').value;
         total += qty * selling_price;
     });
-    document.getElementById('totalDisplay').innerText = total.toLocaleString() + " ₫";
+    document.getElementById('totalDisplay').innerText = (total-paid).toLocaleString() + " ₫";
 }
 
 async function submitInvoice() {
     let fail = false;
     const customer = {
         customer_id: customerIdSelect.value,
-        address: document.getElementById("address").value
+        address: document.getElementById("address").value,
     };
     const items = [];
     document.querySelectorAll('#invoiceItems tr').forEach(row => {
         if (row.querySelector('.name').value==""||row.querySelector('.unit').value==""||row.querySelector('.qty-input').value==""||row.querySelector('.selling-price-input').value=="") {
-            console.log(row.querySelector('.name').value)
+            // console.log(row.querySelector('.name').value)
             fail = true;
             return;
         }
@@ -198,9 +200,13 @@ async function submitInvoice() {
         responseMessage.innerHTML = `<div class="alert alert-danger">Vui lòng nhập hết thông tin các dòng hoặc xóa dòng đó</div>`;
         return;
     }
+    const order = {
+        paid: document.getElementById("paidDisplay").querySelector(".paid-input").value
+    }
     const formData = new FormData;
     formData.append("customer",JSON.stringify(customer))
     formData.append("items",JSON.stringify(items))
+    formData.append("order",JSON.stringify(order))
     try {
         const response = await fetch('actions/create_order.php', {
             method: 'POST',

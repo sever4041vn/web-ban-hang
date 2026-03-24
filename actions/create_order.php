@@ -4,6 +4,7 @@ date_default_timezone_set('Asia/Ho_Chi_Minh');
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $customer = json_decode($_POST["customer"], true);
     $items = json_decode($_POST["items"], true);
+    $order = json_decode($_POST["order"], true);
 
     if (count($items)<=0) {
         echo json_encode(['status' => 'error', 'message' => "Vui lòng nhập đủ trường thông tin"]);
@@ -33,11 +34,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $cost_amount += $item['quantity'] * $item['cost_price'];
         }
         $profit_amount = $total_amount - $cost_amount;
+        $paid_amount = $order["paid"];
+        $debt_amount = $total_amount - $paid_amount;
         // 4. Lưu vào bảng orders
-        $sqlOrder = "INSERT INTO orders (invoice_no, customer_id, address, total_amount, final_amount, profit_amount) 
-                    VALUES (?, ?, ?, ?, ?, ?)";
+        $sqlOrder = "INSERT INTO orders (invoice_no, customer_id, address, total_amount, final_amount, profit_amount, paid_amount, debt_amount) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         $stmtOrder = $pdo->prepare($sqlOrder);
-        $stmtOrder->execute([$invoice_no, $customer["customer_id"], $customer["address"], $total_amount, $total_amount, $profit_amount]);
+        $stmtOrder->execute([$invoice_no, $customer["customer_id"], $customer["address"], $total_amount, $total_amount, $profit_amount, $paid_amount, $debt_amount]);
         $order_id = $pdo->lastInsertId();
 
         // 5. Lặp qua từng sản phẩm để xử lý

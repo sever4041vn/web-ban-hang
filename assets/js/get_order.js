@@ -1,6 +1,6 @@
-async function loadOrders() {
+async function loadOrders(customer_name) {
     try {
-        const response = await fetch('actions/get_order.php');
+        const response = await fetch(`actions/get_order.php?customer_name=${customer_name}`);
         const orders = await response.json();
         const tbody = document.getElementById('orderTableBody');
         tbody.innerHTML = '';
@@ -31,4 +31,8 @@ async function loadOrders() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', loadOrders);
+document.addEventListener('DOMContentLoaded', ()=>loadOrders(""));
+
+const searchOrder = () => {
+    loadOrders(document.getElementById("search").value)
+}

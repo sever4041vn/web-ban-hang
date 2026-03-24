@@ -58,6 +58,8 @@ CREATE TABLE orders (
     discount DECIMAL(15, 2) DEFAULT 0,
     final_amount DECIMAL(15, 2) NOT NULL, -- Tổng tiền sau chiết khấu
     profit_amount DECIMAL(15, 2) NOT NULL, -- Tổng tiền sau chiết khấu
+    paid_amount DECIMAL(15,2) DEFAULT 0,  -- Số tiền đã trả
+    debt_amount DECIMAL(15,2) DEFAULT 0,  -- Số tiền còn nợ
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (customer_id) REFERENCES customers(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

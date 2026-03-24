@@ -14,6 +14,9 @@
                 <i class="bi bi-arrow-clockwise"></i> Làm mới
             </button>
         </div>
+        <div>
+            <input id="search" oninput="searchOrder()" type="text" class="form-control mt-2 mb-2" placeholder="Nhập tên khách hàng">
+        </div>
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-hover align-middle">

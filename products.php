@@ -19,6 +19,11 @@
             <div id="response-message"></div>
         </div>
     </div>
+    <div style="display: flex;align-content: center;justify-content: center;">
+        <button onclick="toPage('add')" class="btn btn-sm btn-outline-secondary"><</button>
+        <input onchange="toPage('go')" id="gotopage" type="number" class="form-control" style="width: 110px">
+        <button onclick="toPage('minus')" class="btn btn-sm btn-outline-secondary">></button>
+    </div>
     <table class="table table-hover bg-white shadow-sm">
         <thead class="table-dark">
             <tr>

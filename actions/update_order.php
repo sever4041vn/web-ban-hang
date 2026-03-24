@@ -4,6 +4,7 @@ date_default_timezone_set('Asia/Ho_Chi_Minh');
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $invoice_no = $_POST["invoice_no"];
     $items = json_decode($_POST["items"], true);
+    $order = json_decode($_POST["order"], true);
 
     if (count($items)<=0) {
         echo json_encode(['status' => 'error', 'message' => "Vui lòng nhập đủ trường thông tin"]);
@@ -41,11 +42,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $cost_amount += $item['quantity'] * $item['cost_price'];
         }
         $profit_amount = $total_amount - $cost_amount;
+        $paid_amount = $order["paid"];
+        $debt_amount = $total_amount - $paid_amount;
         // 6. Lưu vào bảng orders
-        $sqlOrder = "UPDATE orders SET total_amount = ?, final_amount = ?, profit_amount = ?
+        $sqlOrder = "UPDATE orders SET total_amount = ?, final_amount = ?, profit_amount = ?, paid_amount = ?, debt_amount = ?
                     WHERE id = ?";
         $stmtOrder = $pdo->prepare($sqlOrder);
-        $stmtOrder->execute([$total_amount, $total_amount, $profit_amount, $order_id]);
+        $stmtOrder->execute([$total_amount, $total_amount, $profit_amount, $paid_amount, $debt_amount, $order_id]);
         // 6. Lặp qua từng sản phẩm để xử lý
         foreach ($items as $item) {
             $p_id = $item['product_id'];

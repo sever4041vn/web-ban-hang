@@ -29,19 +29,6 @@
                                 <input id="address" type="text" name="address" class="form-control mt-10" placeholder="Nhập địa chỉ" required>
                             </div>
                         </div>
-                        <!-- <div class="row g-3 mb-4">
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold">Tìm sản phẩm</label>
-                                <button class="btn btn-success" onclick="productSelect()">Tải lại</button>
-                                <select id="productSelect" class="form-select select2">
-                                    <option value="">-- Chọn sản phẩm --</option>
-                                </select>
-                        </div>
-                        <div class="col-md-2 d-flex align-items-end">
-                            <button type="button" onclick="addToTable()" class="btn btn-dark w-100">
-                                <i class="bi bi-plus-lg"></i> Thêm hàng
-                            </button>
-                        </div> -->
                     </div>
                     
                     <table class="table table-bordered align-middle">
@@ -58,6 +45,12 @@
                         <tbody id="invoiceItems">
                         </tbody>
                             <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-end fw-bold">Đã thanh toán:</td>
+                                    <td colspan="2" class="text-success fw-bold h5" id="paidDisplay">
+                                        <input type="number" class="form-control paid-input" value = "0" onchange="updateTotal()">
+                                    </td>
+                                </tr>
                                 <tr>
                                     <td colspan="3" class="text-end fw-bold">Tổng cộng:</td>
                                     <td colspan="2" class="text-danger fw-bold h5" id="totalDisplay">0 ₫</td>

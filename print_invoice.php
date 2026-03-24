@@ -15,7 +15,7 @@ if ($orderId) {
     $order_id="";
 }
 // 2. Truy vấn thông tin chung của hóa đơn
-$stmt = $pdo->prepare("SELECT o.*, c.name as customer_name, c.phone as customer_phone 
+$stmt = $pdo->prepare("SELECT o.*, c.id as customer_id, c.name as customer_name, c.phone as customer_phone 
                        FROM orders o 
                        LEFT JOIN customers c ON o.customer_id = c.id 
                        WHERE o.id = ?");
@@ -33,6 +33,13 @@ $itemStmt = $pdo->prepare("SELECT oi.*, p.sku
                            WHERE oi.order_id = ?");
 $itemStmt->execute([$order_id]);
 $items = $itemStmt->fetchAll();
+
+// 4. Truy vấn tổng số tiền hóa đơn trước
+$debtAmountStmt = $pdo->prepare("SELECT SUM(debt_amount) as total_debt 
+                                FROM orders 
+                                WHERE customer_id = ? AND created_at < ?;");
+$debtAmountStmt->execute([$order["customer_id"], $order["created_at"]]);
+$totalDebt = $debtAmountStmt->fetch();
 ?>
 
 <!DOCTYPE html>
@@ -118,6 +125,9 @@ $items = $itemStmt->fetchAll();
                     <td id="profit-hide" class="p-0 text-end fw-bold h10">#</td>
                     <td id="profit-show" style="display: none;" class="p-0 text-end fw-bold h10"><?= number_format($order['profit_amount'], 0, ',', '.') ?></td>
                 </tr>
+                <tr style="display: none; text-align: right;">
+                    <td ondblclick="changeMessage()" colspan="6"  id="message-show" class="p-0 text-end fw-bold h10"></td>
+                </tr>
                 <tr>
                     <td colspan="6" class="border-0 p-0 text-end fw-bold h10">
                         <?php
@@ -141,6 +151,8 @@ $items = $itemStmt->fetchAll();
     </div>
 </div>
 <script>
+    let messageInput = "Tổng nợ cũ: <?= number_format($totalDebt['total_debt'], 0, ',', '.') ?>"
+    const messageDiv = document.getElementById("message-show")
     const showProfit = () => {
         profit_hide = document.getElementById("profit-hide");
         profit_show = document.getElementById("profit-show");
@@ -151,6 +163,31 @@ $items = $itemStmt->fetchAll();
             profit_show.style.display = "";
             profit_hide.style.display = "none";
         }
+    }
+    document.addEventListener("keypress",(e)=>{
+        // console.log(e.key)
+        if (e.key=="Enter") {
+            messageDiv.parentNode.style.display = ""
+        }else if (e.key=="x"){
+            messageDiv.parentNode.style.display = "none"
+        }
+    })
+    const addMessage = () => {
+        messageDiv.innerText = messageInput;
+    }
+    addMessage()
+    
+    const changeMessage = () => {
+        messageDiv.innerText = ""
+        const input = document.createElement("input");
+        input.className = "form-control";
+        input.value = messageInput
+        messageDiv.appendChild(input);
+        input.focus();
+        input.addEventListener("focusout",()=>{
+            messageInput = input.value
+            messageDiv.innerHTML = messageInput
+        })
     }
 </script>
 </body>

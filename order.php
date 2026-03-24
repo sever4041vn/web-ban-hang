@@ -48,6 +48,12 @@
                         </tbody>
                             <tfoot>
                                 <tr>
+                                    <td colspan="3" class="text-end fw-bold">Đã thanh toán:</td>
+                                    <td colspan="2" class="text-success fw-bold h5" id="paidDisplay">
+                                        <input type="number" class="form-control paid-input" value = "0" onchange="updateTotal()">
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td colspan="3" class="text-end fw-bold">Tổng cộng:</td>
                                     <td colspan="2" class="text-danger fw-bold h5" id="totalDisplay">0 ₫</td>
                                 </tr>
