@@ -15,6 +15,7 @@ async function loadOrders(customer_name) {
                     <td>${o.customer_name}</td>
                     <td>${o.address}</td>
                     <td class="fw-bold text-success">${Number(o.final_amount).toLocaleString()} ₫</td>
+                    <td class="fw-bold text-success">${Number(o.debt_amount).toLocaleString()} ₫</td>
                     <td class="text-center">
                         <a href="print_invoice.php?invoice_no=${o.invoice_no}" class="btn btn-sm btn-outline-secondary" title="Xem & In">
                             <i class="bi bi-printer"></i> Xem lại

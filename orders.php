@@ -26,7 +26,8 @@
                             <th>Ngày Tạo</th>
                             <th>Khách Hàng</th>
                             <th>Địa Chỉ</th>
-                            <th>Tổng Tiền</th>
+                            <th>Tổng Tiền Toa Hàng</th>
+                            <th>Tổng Tiền Nợ trước</th>
                             <th class="text-center">Thao Tác</th>
                         </tr>
                     </thead>

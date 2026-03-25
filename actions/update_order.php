@@ -42,13 +42,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $cost_amount += $item['quantity'] * $item['cost_price'];
         }
         $profit_amount = $total_amount - $cost_amount;
-        $paid_amount = $order["paid"];
-        $debt_amount = $total_amount - $paid_amount;
+        $extra_label_1 = $order["extra_label_1"];
+        $extra_value_1 = $order["extra_value_1"];
+        $extra_label_2 = $order["extra_label_2"];
+        $debt_amount = $order["debt_amount"];
         // 6. Lưu vào bảng orders
-        $sqlOrder = "UPDATE orders SET total_amount = ?, final_amount = ?, profit_amount = ?, paid_amount = ?, debt_amount = ?
+        $sqlOrder = "UPDATE orders SET total_amount = ?, final_amount = ?, profit_amount = ?, extra_label_1 = ?, extra_value_1 = ?, extra_label_2 = ?,debt_amount = ?
                     WHERE id = ?";
         $stmtOrder = $pdo->prepare($sqlOrder);
-        $stmtOrder->execute([$total_amount, $total_amount, $profit_amount, $paid_amount, $debt_amount, $order_id]);
+        $stmtOrder->execute([$total_amount, $total_amount, $profit_amount, $extra_label_1, $extra_value_1, $extra_label_2, $debt_amount, $order_id]);
         // 6. Lặp qua từng sản phẩm để xử lý
         foreach ($items as $item) {
             $p_id = $item['product_id'];

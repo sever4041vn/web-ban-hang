@@ -12,8 +12,13 @@ body {
 
     /* Bỏ lề mặc định của trình duyệt */
     @page {
-        margin: 0cm;
+        /* margin: 0cm;
         size: auto; /* Hoặc 'A5 landscape' hoặc 'K80' tùy máy in */
+        /* Chỉnh lề dưới là 10mm, các lề khác tùy chọn */
+        margin-bottom: 5mm; 
+        margin-top: 5mm;
+        margin-left: 5mm;
+        margin-right: 5mm;
     }
 
     body {

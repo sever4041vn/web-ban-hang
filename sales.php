@@ -45,16 +45,28 @@
                         <tbody id="invoiceItems">
                         </tbody>
                             <tfoot>
-                                <tr>
-                                    <td colspan="3" class="text-end fw-bold">Đã thanh toán:</td>
-                                    <td colspan="2" class="text-success fw-bold h5" id="paidDisplay">
-                                        <input type="number" class="form-control paid-input" value = "0" onchange="updateTotal()">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="3" class="text-end fw-bold">Tổng cộng:</td>
-                                    <td colspan="2" class="text-danger fw-bold h5" id="totalDisplay">0 ₫</td>
-                                </tr>
+                                    <tr>
+                                        <td colspan="3" class="text-end fw-bold">Tổng cộng toa hàng:</td>
+                                        <td colspan="2" class="text-danger fw-bold h5" id="totalDisplay">0 ₫</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" class="text-end fw-bold">
+                                            <input id="label_1" type="text" class="form-control" style="text-align: right" value="Tổng công nợ trước:">
+                                        </td>
+                                        <td colspan="2" class="text-success fw-bold h5" id="paidDisplay">
+                                            <input type="text" class="form-control" value = "0" oninput="formatCurrency(this); updateTotal()">
+                                            <input id="amount_1" type="hidden" class="form-control" value = "0">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" class="text-end fw-bold">
+                                            <input id="label_2" type="text" class="form-control" style="text-align: right" value="Tổng cộng thanh toán: ">
+                                        </td>
+                                        <td colspan="2" class="text-success fw-bold h5" id="paidDisplay">
+                                            <input type="text" class="form-control amount" value = "0" oninput="formatCurrency(this)">
+                                            <input id="amount_2" type="hidden" class="form-control" value = "0">
+                                        </td>
+                                    </tr>
                             </tfoot>
                         </table>
                         

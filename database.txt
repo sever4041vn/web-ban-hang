@@ -58,10 +58,13 @@ CREATE TABLE orders (
     discount DECIMAL(15, 2) DEFAULT 0,
     final_amount DECIMAL(15, 2) NOT NULL, -- Tổng tiền sau chiết khấu
     profit_amount DECIMAL(15, 2) NOT NULL, -- Tổng tiền sau chiết khấu
-    paid_amount DECIMAL(15,2) DEFAULT 0,  -- Số tiền đã trả
-    debt_amount DECIMAL(15,2) DEFAULT 0,  -- Số tiền còn nợ
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (customer_id) REFERENCES customers(id)
+    paid_amount DECIMAL(15,2) DEFAULT 0,  -- Số tiền đã trả
+    extra_label_1 VARCHAR(255) DEFAULT NULL, -- Nội dung dòng 1 (VD: Nợ cũ)
+    extra_value_1 DECIMAL(15,2) DEFAULT 0,    -- Số tiền dòng 1 (VD: 500000)
+    extra_label_2 VARCHAR(255) DEFAULT NULL, -- Nội dung dòng 2 (VD: Phí vận chuyển)
+    debt_amount DECIMAL(15,2) DEFAULT 0,  -- Số tiền còn nợ
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 6. Chi tiết hóa đơn (Để lưu từng món trong 1 hóa đơn)

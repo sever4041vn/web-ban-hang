@@ -34,13 +34,13 @@ $itemStmt = $pdo->prepare("SELECT oi.*, p.sku
 $itemStmt->execute([$order_id]);
 $items = $itemStmt->fetchAll();
 
-// 4. Truy vấn tổng số tiền hóa đơn trước
-$debtAmountStmt = $pdo->prepare("SELECT SUM(debt_amount) as total_debt 
-                                FROM orders 
-                                WHERE customer_id = ? AND created_at < ?;");
-$debtAmountStmt->execute([$order["customer_id"], $order["created_at"]]);
-$totalDebt = $debtAmountStmt->fetch();
-?>
+// // 4. Truy vấn tổng số tiền hóa đơn trước
+// $debtAmountStmt = $pdo->prepare("SELECT SUM(debt_amount) as total_debt 
+//                                 FROM orders 
+//                                 WHERE customer_id = ? AND created_at < ?;");
+// $debtAmountStmt->execute([$order["customer_id"], $order["created_at"]]);
+// $totalDebt = $debtAmountStmt->fetch();
+// ?>
 
 <!DOCTYPE html>
 <html lang="vi">
@@ -57,7 +57,7 @@ $totalDebt = $debtAmountStmt->fetch();
         <a href="order.php?invoice_no=<?= $order['invoice_no']?>" class="btn btn-success">Sửa hóa đơn</a>
     </div>
 
-    <div style="font-size: smaller;" class="invoice-box p-4 border shadow-sm bg-white">
+    <div style="font-size: smaller;" class="invoice-box p-1 border shadow-sm bg-white">
         <div class="row">
             <h3 class="fw-bold text-uppercase text-center mb-0">CÔNG TY TNHH MTV VÀ DV KHÁNH HỒNG</h3>
             <h4 class="fw-bold text-center d-flex justify-content-center">
@@ -117,6 +117,14 @@ $totalDebt = $debtAmountStmt->fetch();
                     <td colspan="5" class="p-0 text-end fw-bold h10">Tổng toa hàng:</td>
                     <td class="p-0 text-end fw-bold h10"><?= number_format($order['final_amount'], 0, ',', '.') ?></td>
                 </tr>
+                <tr id="label_1" style="display: none; text-align: right;">
+                    <td colspan="5"  class="p-0 text-end fw-bold h10"><?= $order ['extra_label_1']?></td>
+                    <td class="p-0 text-end fw-bold h10"><?= number_format($order ['extra_value_1'], 0, ',', '.') ?></td>
+                </tr>
+                <tr id="label_2" style="display: none; text-align: right;">
+                    <td colspan="5"  class="p-0 text-end fw-bold h10"><?= $order ['extra_label_2'] ?></td>
+                    <td class="p-0 text-end fw-bold h10"><?= number_format($order ['debt_amount'], 0, ',', '.') ?></td>
+                </tr>
                 <tr class="no-print">
                     <td colspan="5" class="p-0 text-end fw-bold h10">
                         <button style="font-size: smaller !important;" onclick="showProfit()" class="btn">Hiện lợi nhuận</button>
@@ -124,9 +132,6 @@ $totalDebt = $debtAmountStmt->fetch();
                     </td>
                     <td id="profit-hide" class="p-0 text-end fw-bold h10">#</td>
                     <td id="profit-show" style="display: none;" class="p-0 text-end fw-bold h10"><?= number_format($order['profit_amount'], 0, ',', '.') ?></td>
-                </tr>
-                <tr style="display: none; text-align: right;">
-                    <td ondblclick="changeMessage()" colspan="6"  id="message-show" class="p-0 text-end fw-bold h10"></td>
                 </tr>
                 <tr>
                     <td colspan="6" class="border-0 p-0 text-end fw-bold h10">
@@ -151,8 +156,9 @@ $totalDebt = $debtAmountStmt->fetch();
     </div>
 </div>
 <script>
-    let messageInput = "Tổng nợ cũ: <?= number_format($totalDebt['total_debt'], 0, ',', '.') ?>"
-    const messageDiv = document.getElementById("message-show")
+    let label1 = document.getElementById("label_1")
+    let label2 = document.getElementById("label_2")
+
     const showProfit = () => {
         profit_hide = document.getElementById("profit-hide");
         profit_show = document.getElementById("profit-show");
@@ -167,28 +173,14 @@ $totalDebt = $debtAmountStmt->fetch();
     document.addEventListener("keypress",(e)=>{
         // console.log(e.key)
         if (e.key=="Enter") {
-            messageDiv.parentNode.style.display = ""
+            label1.style.display = ""
+            label2.style.display = ""
         }else if (e.key=="x"){
-            messageDiv.parentNode.style.display = "none"
+            label1.style.display = "none"
+            label2.style.display = "none"
         }
     })
-    const addMessage = () => {
-        messageDiv.innerText = messageInput;
-    }
-    addMessage()
-    
-    const changeMessage = () => {
-        messageDiv.innerText = ""
-        const input = document.createElement("input");
-        input.className = "form-control";
-        input.value = messageInput
-        messageDiv.appendChild(input);
-        input.focus();
-        input.addEventListener("focusout",()=>{
-            messageInput = input.value
-            messageDiv.innerHTML = messageInput
-        })
-    }
+
 </script>
 </body>
 </html>
