@@ -84,9 +84,9 @@ const toggleShowSearchBox = (target,action) => {
     if (action=="show") {
         searchBox.style.display = "block"
     }else if(action == "hide"){
-        if (target.value == "") {
+        setTimeout(() => {
             searchBox.style.display = "none"
-        }
+        }, 150);
     }
 }
 
