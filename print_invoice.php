@@ -85,7 +85,7 @@ $items = $itemStmt->fetchAll();
             <p class="mb-1 col-6 text-start">ĐC: <?= $order['address']?></p>
         </div>
 
-        <table class="table table-bordered">
+        <table class="table table-bordered" style="border: 0.5px solid gray">
             <thead class="">
                 <tr class="text-center">
                     <th class="p-0">STT</th>

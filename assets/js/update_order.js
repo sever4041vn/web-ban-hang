@@ -30,8 +30,9 @@ const addToTable = (data) => {
                                     <input type="number" class="form-control qty-input" value="1" min="1" onchange="calculateRow(this)">
                                 </td>
                                 <td>
+                                    <input type="text" class="form-control" value="${Number(selling_price).toLocaleString('vi-VN')}" oninput="formatCurrency(this);calculateRow(this.parentNode.querySelector('.selling-price-input'))">
+                                    <input type="hidden" class="form-control selling-price-input" value="${selling_price}" onchange="calculateRow(this)">
                                     <input style="display:none;" type="number" class="form-control cost-price-input" value="${cost_price}" onchange="calculateRow(this)">
-                                    <input type="number" class="form-control selling-price-input" value="${selling_price}" onchange="calculateRow(this)">
                                 </td>
                                     <td class="subtotal fw-bold">${Number(selling_price).toLocaleString('vi-VN')} ₫</td>
                                 <td>                 
@@ -62,8 +63,9 @@ const addToTable = (data) => {
                                         <input type="number" value="${item["quantity"]}" class="form-control qty-input" onchange="calculateRow(this)">
                                     </td>
                                     <td>
+                                        <input type="text" class="form-control" value="${Number(item["selling_price"]).toLocaleString('vi-VN')}" oninput="formatCurrency(this);calculateRow(this.parentNode.querySelector('.selling-price-input'))">
+                                        <input type="hidden" class="form-control selling-price-input" value="${item["selling_price"]}" onchange="calculateRow(this)">
                                         <input style="display:none;" type="number" class="form-control cost-price-input" value="${item["cost_price"]}" onchange="calculateRow(this)">
-                                        <input type="number" class="form-control selling-price-input" value="${item["selling_price"]}" onchange="calculateRow(this)">
                                     </td>
                                         <td class="subtotal fw-bold">${Number(selling_price).toLocaleString('vi-VN')} ₫</td>
                                     <td>                 
@@ -136,8 +138,9 @@ const addToRow = (e, data) => {
     name.value = data[1];
     unit.value = data[2];
     cost_price.value = data[3];
+    selling_price.parentNode.querySelectorAll("input")[0].value = Number(data[4]).toLocaleString('vi-VN')
     selling_price.value = data[4];
-    console.log(data)
+    // console.log(data)
     calculateRow(e.target);
     addToTable();
 } 

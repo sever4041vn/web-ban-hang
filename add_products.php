@@ -45,11 +45,13 @@
                     </div>
                     <div class="col-md-4 mb-3">
                         <label class="form-label fw-bold">Giá vốn (VNĐ)</label>
-                        <input id="cost_price" type="number" name="cost_price" class="form-control" value="0">
+                        <input type="text" class="form-control" value="0" oninput="formatCurrency(this);profitCount()">
+                        <input id="cost_price" type="hidden" name="cost_price" class="form-control" value="0">
                     </div>
                     <div class="col-md-4 mb-3">
                         <label class="form-label fw-bold">Giá bán (VNĐ)</label>
-                        <input id="selling_price" type="number" name="selling_price" class="form-control" value="0">
+                        <input type="text" class="form-control" value="0" oninput="formatCurrency(this);profitCount()">
+                        <input id="selling_price" type="hidden" name="selling_price" class="form-control" value="0">
                     </div>
                 </div>
 
