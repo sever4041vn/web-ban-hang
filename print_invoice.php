@@ -134,7 +134,7 @@ $items = $itemStmt->fetchAll();
                     <td id="profit-show" style="display: none;" class="p-0 text-end fw-bold h10"><?= number_format($order['profit_amount'], 0, ',', '.') ?></td>
                 </tr>
                 <tr>
-                    <td colspan="6" class="border-0 p-0 text-end fw-bold h10">
+                    <td colspan="6" class="border-0 p-0 text-end fw-bold h10" ondblclick="changeDate(this)">
                         <?php
 
                             $timestamp = strtotime($order['created_at']);
@@ -159,6 +159,7 @@ $items = $itemStmt->fetchAll();
     let label1 = document.getElementById("label_1")
     let label2 = document.getElementById("label_2")
 
+    let datePrint = "<?php $timestamp = strtotime($order['created_at']); echo strftime("Ngày %d tháng %m năm %Y",$timestamp );?>"
     const showProfit = () => {
         profit_hide = document.getElementById("profit-hide");
         profit_show = document.getElementById("profit-show");
@@ -180,7 +181,19 @@ $items = $itemStmt->fetchAll();
             label2.style.display = "none"
         }
     })
+    const changeDate = (target) => {
+        target.innerHTML = "";
+        const input = document.createElement("input");
+        input.className = "form-control text-end fw-bold";
+        input.value = datePrint;
+        input.addEventListener("focusout",()=>saveDate(target,input.value))
+        target.appendChild(input);
+        input.focus()
 
+    }
+    const saveDate = (dateDiv,value) => {
+        dateDiv.innerHTML = value
+    }
 </script>
 </body>
 </html>
