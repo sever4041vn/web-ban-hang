@@ -60,7 +60,7 @@ const addToTable = (data) => {
                                         <input class="unit form-control" type="text" value="${item["unit"]}">
                                     </td>
                                     <td>
-                                        <input type="number" value="${item["quantity"]}" class="form-control qty-input" onchange="calculateRow(this)">
+                                        <input type="number" value="${Number(item["quantity"])}" class="form-control qty-input" onchange="calculateRow(this)">
                                     </td>
                                     <td>
                                         <input type="text" class="form-control" value="${Number(item["selling_price"]).toLocaleString('vi-VN')}" oninput="formatCurrency(this);calculateRow(this.parentNode.querySelector('.selling-price-input'))">

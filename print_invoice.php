@@ -106,7 +106,7 @@ $items = $itemStmt->fetchAll();
                     <td class="text-center p-0"><?=$stt?></td>
                     <td class="p-0"><?= $item['name'] ?><br></td>
                     <td class="text-center p-0"><?= $item['unit'] ?></td>
-                    <td class="text-center p-0"><?= $item['quantity'] ?></td>
+                    <td class="text-center p-0"><?= (float)$item['quantity'] ?></td>
                     <td class="text-end p-0"><?= number_format($item['selling_price'], 0, ',', '.') ?></td>
                     <td class="text-end p-0"><?= number_format($item['subtotal'], 0, ',', '.') ?></td>
                 </tr>
@@ -193,6 +193,7 @@ $items = $itemStmt->fetchAll();
     }
     const saveDate = (dateDiv,value) => {
         dateDiv.innerHTML = value
+        datePrint = value
     }
 </script>
 </body>

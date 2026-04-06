@@ -26,7 +26,7 @@ CREATE TABLE products (
     category_id INT,
     cost_price DECIMAL(15, 2) DEFAULT 0, -- Giá vốn (để tính lợi nhuận)
     selling_price DECIMAL(15, 2) DEFAULT 0, -- Giá bán
-    stock_quantity INT DEFAULT 0, -- Số lượng tồn kho hiện tại
+    stock_quantity DECIMAL(15,2) DEFAULT 0.00, -- Số lượng tồn kho hiện tại
     unit VARCHAR(20) DEFAULT 'Cái', -- Đơn vị tính
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -74,7 +74,7 @@ CREATE TABLE order_items (
     product_id INT NOT NULL,
     name VARCHAR(255) NOT NULL,
     unit VARCHAR(20) DEFAULT 'Cái',
-    quantity INT NOT NULL,
+    quantity DECIMAL(15,2) NOT NULL,
     cost_price DECIMAL(15, 2) NOT NULL, -- Lưu giá tại thời điểm bán
     selling_price DECIMAL(15, 2) NOT NULL, -- Lưu giá tại thời điểm bán
     subtotal DECIMAL(15, 2) NOT NULL,
@@ -87,7 +87,7 @@ CREATE TABLE inventory_log (
     id INT AUTO_INCREMENT PRIMARY KEY,
     product_id INT NOT NULL,
     type ENUM('import', 'export', 'adjustment') NOT NULL, -- Nhập, Xuất, Điều chỉnh
-    quantity INT NOT NULL,
+    quantity DECIMAL(15,2) NOT NULL,
     reference_id INT, -- ID của hóa đơn hoặc phiếu nhập tương ứng
     note TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
