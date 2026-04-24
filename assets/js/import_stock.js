@@ -3,11 +3,16 @@ const importForm = document.getElementById("importForm");
 const responseMessage = document.getElementById("response-message");
 const historyTableBody = document.getElementById("historyTableBody")
 
+document.querySelector(".name").addEventListener("focusin", (e)=>toggleShowSearchBox(e.target,"show"))
+document.querySelector(".name").addEventListener("focusout", (e)=>toggleShowSearchBox(e.target,"hide"))
 
-const productSelect = async () => {
+const searchProducts = async (e) => {
+    let searchBox = e.target.parentNode.querySelector(".search-box");
+    const search = e.target.value;
     let products = []
+    let productOption = '';
     try {
-        const response = await fetch(`actions/get_product.php`);
+        const response = await fetch(`actions/get_product.php?search=${search}`);
         const result = await response.json(); // Đợi phản hồi JSON từ PHP
         if (result.status === 'success') {
             products= JSON.parse(result.message);
@@ -18,11 +23,32 @@ const productSelect = async () => {
         products = [];
     }
     for (let i = 0; i < products.length; i++) {
-        productIdSelect.innerHTML = productIdSelect.innerHTML + `<option value="${products[i]["id"]}">${products[i]["sku"]} - ${products[i]["name"]}</option>`
+        productOption = productOption + `
+        <button onclick='setId(event, [${products[i]["id"]},"${products[i]["name"]}"])' class="btn border btn-primary">${products[i]["sku"]} - ${products[i]["name"]}</button>
+        `
+    }
+    if (productOption=="") {
+        searchBox.innerHTML = `<p>Không tìm thấy sản phẩm</p>`;
+    }else{
+        searchBox.innerHTML = productOption;
     }
 }
 
-productSelect()
+const setId = (e, product) => {
+    e.target.parentNode.parentNode.querySelector(".id").value = product[0]
+    e.target.parentNode.parentNode.querySelector(".name").value = product[1]
+}
+
+const toggleShowSearchBox = (target,action) => {
+    let searchBox =target.parentNode.querySelector(".search-box");
+    if (action=="show") {
+        searchBox.style.display = "block"
+    }else if(action == "hide"){
+        setTimeout(() => {
+            searchBox.style.display = "none"
+        }, 150);
+    }
+}
 
 importForm.addEventListener("submit", async (e)=>{
     e.preventDefault();

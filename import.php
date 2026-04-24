@@ -19,9 +19,11 @@
                     <form id="importForm">
                         <div class="mb-3">
                             <label class="form-label">Chọn sản phẩm</label>
-<select class="form-control select2" name="product_id" id="productSelect" required>
-    <option value="">-- Chọn sản phẩm --</option>
-</select>
+                            <div class="mb-3 position-relative">
+                                <input oninput="searchProducts(event)" class="name form-control" type="text">
+                                <input style="display: none;" name="product_id" oninput="searchProducts(event)" class="id form-control" type="text">
+                                <div style="display: none;" class="z-3 l-0 w-100 search-box bg-white position-absolute row"></div>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Số lượng nhập</label>
@@ -62,13 +64,4 @@
         </div>
     </div>
 </div>
-<script>
-$(document).ready(function() {
-    $('#productSelect').select2({
-        placeholder: "Tìm tên hoặc mã SKU...",
-        allowClear: true
-    });
-});
-    
-</script>
 <script src="assets/js/import_stock.js"></script>

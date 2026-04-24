@@ -8,6 +8,8 @@ try {
         $page=1;
     }elseif ($page<=0){
         $page=1;
+    }elseif ($page=="undefined"){
+        $page=1;
     }
     //Lấy sản phẩm
     if ($search) {

@@ -33,10 +33,15 @@ const getProducts = async (search, page) => {
                 products = products + `<tr id=${product["id"]} data-id=${product["id"]}>
                 <td>${product["sku"]}</td>
                 <td>${product["name"]}</td>
-                <td>${product["stock_quantity"]}</td>
+                <td ondblclick="changeStockFocus(this)" class="stock_quantity" data-stock="${product["stock_quantity"]}">${product["stock_quantity"]}</td>
                 <td>${product["unit"]}</td>
-                <td ondblclick="changePriceFocus(this)" class="cost_price" data-price="${product["cost_price"]}" data-show="true">* ₫</td>
-                <td ondblclick="changePriceFocus(this)" class="selling_price" data-price="${product["selling_price"]}">${Intl.NumberFormat('vi-VN').format(product["selling_price"])} ₫</td>
+                <td ondblclick="changePriceFocus(this)" class="cost_price" data-price="${product["cost_price"]}" data-show="true">
+                    * ₫
+                </td>
+                <td ondblclick="changePriceFocus(this)" class="selling_price" data-price="${product["selling_price"]}">
+                    ${Intl.NumberFormat('vi-VN').format(product["selling_price"])} ₫
+                    
+                </td>
                 <td>
                     ${profitTotalSpan}
                 </td>
@@ -85,6 +90,21 @@ const showHideProfit = (id) => {
         div.setAttribute("data-show", "true")
     }
 }
+//CHỉnh sửa tồn kho
+const changeStockFocus = (target) => {
+    const product = target.parentElement
+    const product_id = product.getAttribute("data-id")
+    const stock_quantity = product.getElementsByClassName("stock_quantity")[0].getAttribute("data-stock")
+    target.innerHTML = "";
+    const input = document.createElement("input");
+    input.className = "form-control";
+    input.style.width = "110px"
+    input.value = target.getAttribute("data-stock");
+    target.appendChild(input);
+    input.focus();
+    input.addEventListener("focusout",()=>changeStock(product_id,input.value))
+
+}
 //CHỉnh sửa giá
 const changePriceFocus = (target) => {
     const product = target.parentElement
@@ -95,14 +115,23 @@ const changePriceFocus = (target) => {
     const input = document.createElement("input");
     input.className = "form-control";
     input.style.width = "110px"
-    input.value = target.getAttribute("data-price");
+    input.value = Number(target.getAttribute("data-price")).toLocaleString('vi-VN');
+    input.addEventListener("input",()=>formatCurrency(input))
     target.appendChild(input);
     input.focus();
+
+    const input2 = document.createElement("input");
+    input2.className = "form-control";
+    input2.style.width = "110px"
+    input2.value = target.getAttribute("data-price");
+    input2.hidden = true;
+    input2.type = "number"
+    target.appendChild(input2);
     if (target.className == "cost_price" ) {
-        input.addEventListener("focusout",()=>changePrice(product_id,input.value,selling_price))
+        input.addEventListener("focusout",()=>changePrice(product_id,input2.value,selling_price))
 
     }else{
-        input.addEventListener("focusout",()=>changePrice(product_id,cost_price,input.value))
+        input.addEventListener("focusout",()=>changePrice(product_id,cost_price,input2.value))
     }
 }
 const changePrice = async (product_id, cost_price, selling_price) => {
@@ -146,5 +175,69 @@ const changePrice = async (product_id, cost_price, selling_price) => {
         }, 3000);
     }
     getProducts(searchValue)
+}
+
+//Thay đổi tồn kho
+const changeStock = async (product_id, stock_quantity) => {
+    // console.log(product_id, cost_price, selling_price)
+    try {
+        const formData = new FormData;
+        formData.append("product_id",product_id);
+        formData.append("quantity",stock_quantity);
+
+        response = await fetch(`actions/post_stock.php`,{
+            method:"POST",
+            body: formData
+        });
+
+        const result = await response.json(); // Đợi phản hồi JSON từ PHP
+        if (result.status === 'success') {
+            const div = document.createElement("div")
+            div.className = "alert alert-success";
+            div.innerHTML = result.message;
+            responseMessage.appendChild(div);
+            setTimeout(() => {
+                div.remove();
+            }, 3000);
+        } else {
+            const div = document.createElement("div")
+            div.className = "alert alert-danger";
+            div.innerHTML = result.message;
+            responseMessage.appendChild(div);
+            setTimeout(() => {
+                div.remove();
+            }, 3000);
+        }
+    } catch (error) {
+        console.log(error)
+        const div = document.createElement("div")
+        div.className = "alert alert-success";
+        div.innerHTML = "Lỗi kết nối máy chủ";
+        responseMessage.appendChild(div);
+        setTimeout(() => {
+            div.remove();
+        }, 3000);
+    }
+    getProducts(searchValue)
+}
+
+function formatCurrency(input) {
+    // console.log(input)
+    let value = input.value;
+
+    // 1. Kiểm tra xem có dấu trừ ở đầu không
+    const isNegative = value.startsWith('-');
+
+    // 2. Lấy giá trị số (loại bỏ tất cả ký tự không phải số)
+    let digits = value.replace(/\D/g, "");
+
+    // 3. Định dạng phần số với dấu chấm hàng nghìn
+    let formatted = digits !== "" ? Number(digits).toLocaleString('vi-VN') : 0;
+
+    // 4. Ghép dấu trừ lại nếu có
+    input.value = (isNegative && (digits !== "" || value === "-")) ? "-" + formatted : formatted;
+
+    // 5. Lưu giá trị thực (số nguyên) vào ô ẩn để gửi lên PHP
+    input.parentNode.querySelectorAll("input")[1].value = isNegative ? "-" + digits : digits;
 }
 getProducts("")
