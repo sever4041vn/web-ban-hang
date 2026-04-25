@@ -53,6 +53,7 @@ CREATE TABLE orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
     invoice_no VARCHAR(50) UNIQUE NOT NULL, -- Số hóa đơn (VD: HD20240212001)
     customer_id INT,
+    customer_name VARCHAR(255) NOT NULL
     address VARCHAR(100) DEFAULT NULL,
     total_amount DECIMAL(15, 2) NOT NULL,
     discount DECIMAL(15, 2) DEFAULT 0,

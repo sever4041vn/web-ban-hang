@@ -3,6 +3,7 @@ require_once '../config/db.php';
 date_default_timezone_set('Asia/Ho_Chi_Minh');
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $invoice_no = $_POST["invoice_no"];
+    $customer = json_decode($_POST["customer"], true);
     $items = json_decode($_POST["items"], true);
     $order = json_decode($_POST["order"], true);
 
@@ -47,10 +48,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $extra_label_2 = $order["extra_label_2"];
         $debt_amount = $order["debt_amount"];
         // 6. Lưu vào bảng orders
-        $sqlOrder = "UPDATE orders SET total_amount = ?, final_amount = ?, profit_amount = ?, extra_label_1 = ?, extra_value_1 = ?, extra_label_2 = ?,debt_amount = ?
+        $sqlOrder = "UPDATE orders SET customer_id = ?, customer_name = ?, address = ?, total_amount = ?, final_amount = ?, profit_amount = ?, extra_label_1 = ?, extra_value_1 = ?, extra_label_2 = ?,debt_amount = ?
                     WHERE id = ?";
         $stmtOrder = $pdo->prepare($sqlOrder);
-        $stmtOrder->execute([$total_amount, $total_amount, $profit_amount, $extra_label_1, $extra_value_1, $extra_label_2, $debt_amount, $order_id]);
+        $stmtOrder->execute([$customer["customer_id"], $customer["customer_name"], $customer["address"], $total_amount, $total_amount, $profit_amount, $extra_label_1, $extra_value_1, $extra_label_2, $debt_amount, $order_id]);
         // 6. Lặp qua từng sản phẩm để xử lý
         foreach ($items as $item) {
             $p_id = $item['product_id'];

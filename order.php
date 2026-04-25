@@ -27,7 +27,11 @@
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
                                 <label class="form-label fw-bold">Khách hàng</label>
-                                <input id="customerName" type="text" name="customerName" class="form-control mt-10" required>
+                                <div class="mb-3 position-relative">
+                                    <input id="customer_name" oninput="searchCustomers(event)" class="name form-control" type="text" placeholder="Nhập tên khách hàng">
+                                    <input id="id" style="display: none;" name="customer_id" oninput="searchCustomers(event)" class="id form-control" type="text">
+                                    <div style="display: none;" class="z-3 l-0 w-100 search-box bg-white position-absolute row"></div>
+                                </div>
                                 <input id="address" type="text" name="address" class="form-control mt-10" placeholder="Nhập địa chỉ" required>
                             </div>
                         </div>

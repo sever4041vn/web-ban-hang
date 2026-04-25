@@ -4,7 +4,7 @@ header('Content-Type: application/json');
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $product_id = $_POST['product_id'] ?? null;
-    $quantity = intval($_POST['quantity'] ?? 0);
+    $quantity = $_POST['quantity'] ?? 0;
     $note = $_POST['note'] ?? 'Nhập hàng bổ sung';
 
     if (!$product_id || $quantity <= 0) {

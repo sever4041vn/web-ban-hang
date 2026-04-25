@@ -39,10 +39,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $extra_label_2 = $order["extra_label_2"];
         $debt_amount = $order["debt_amount"];
         // 4. Lưu vào bảng orders
-        $sqlOrder = "INSERT INTO orders (invoice_no, customer_id, address, total_amount, final_amount, profit_amount, extra_label_1, extra_value_1, extra_label_2, debt_amount) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $sqlOrder = "INSERT INTO orders (invoice_no, customer_id, customer_name, address, total_amount, final_amount, profit_amount, extra_label_1, extra_value_1, extra_label_2, debt_amount) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmtOrder = $pdo->prepare($sqlOrder);
-        $stmtOrder->execute([$invoice_no, $customer["customer_id"], $customer["address"], $total_amount, $total_amount, $profit_amount, $extra_label_1, $extra_value_1, $extra_label_2, $debt_amount]);
+        $stmtOrder->execute([$invoice_no, $customer["customer_id"], $customer["customer_name"], $customer["address"], $total_amount, $total_amount, $profit_amount, $extra_label_1, $extra_value_1, $extra_label_2, $debt_amount]);
         $order_id = $pdo->lastInsertId();
 
         // 5. Lặp qua từng sản phẩm để xử lý

@@ -9,7 +9,7 @@ try {
     $items;
     // Lấy danh sách hóa đơn mới nhất lên đầu
     if ($invoice_no) {
-        $sql = "SELECT o.*, c.name as customer_name 
+        $sql = "SELECT o.*, c.name as customer_name_real 
                 FROM orders o 
                 LEFT JOIN customers c ON o.customer_id = c.id 
                 WHERE o.invoice_no = ?";
@@ -28,10 +28,10 @@ try {
 
     }else{
 
-        $sql = "SELECT o.*, c.name as customer_name 
+        $sql = "SELECT o.*, c.name as customer_name_real 
                 FROM orders o 
                 LEFT JOIN customers c ON o.customer_id = c.id 
-                WHERE c.name LIKE ? OR c.id LIKE ?
+                WHERE o.customer_name LIKE ? OR c.id LIKE ?
                 ORDER BY o.created_at DESC";
         
         $stmt = $pdo->prepare($sql);

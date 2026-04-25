@@ -15,7 +15,7 @@ if ($orderId) {
     $order_id="";
 }
 // 2. Truy vấn thông tin chung của hóa đơn
-$stmt = $pdo->prepare("SELECT o.*, c.id as customer_id, c.name as customer_name, c.phone as customer_phone 
+$stmt = $pdo->prepare("SELECT o.*, c.id as customer_id, c.name as customer_name_real, c.phone as customer_phone 
                        FROM orders o 
                        LEFT JOIN customers c ON o.customer_id = c.id 
                        WHERE o.id = ?");
@@ -81,7 +81,11 @@ $items = $itemStmt->fetchAll();
         </div>
         <hr class="mt-1 mb-1">
         <div class="row mb-1 d-flex justify-content-center text-center">
-            <p class="mb-1 col-6 text-end">Khách hàng: <strong><?= $order['customer_name'] ?? 'Khách lẻ' ?></strong></p>
+            <p class="mb-1 col-6 text-end">Khách hàng: 
+                <strong>
+                    <?= $order['customer_name']!=""? $order['customer_name']: $order['customer_name_real'] ?>
+                </strong>
+            </p>
             <p class="mb-1 col-6 text-start">ĐC: <?= $order['address']?></p>
         </div>
 

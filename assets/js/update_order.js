@@ -10,6 +10,44 @@ document.addEventListener("keypress",(e)=>{
     }
 })
 
+
+document.querySelector(".name").addEventListener("focusin", (e)=>toggleShowSearchBox(e.target,"show"))
+document.querySelector(".name").addEventListener("focusout", (e)=>toggleShowSearchBox(e.target,"hide"))
+
+const searchCustomers = async (e) => {
+    let searchBox = e.target.parentNode.querySelector(".search-box");
+    e.target.parentNode.parentNode.querySelector(".id").value = 1
+    const search = e.target.value;
+    let customers = []
+    let customerOption = '';
+    try {
+        const response = await fetch(`actions/get_customer.php?search=${search}`);
+        const result = await response.json(); // Đợi phản hồi JSON từ PHP
+        if (result.status === 'success') {
+            customers= JSON.parse(result.message);
+        } else {
+            customers = [];
+        }
+    } catch (error) {
+        customers = [];
+    }
+    for (let i = 0; i < customers.length; i++) {
+        customerOption = customerOption + `
+        <button onclick='setId(event, [${customers[i]["id"]},"${customers[i]["name"]}"])' class="btn border btn-primary">${customers[i]["id"]} - ${customers[i]["name"]}</button>
+        `
+    }
+    if (customerOption=="") {
+        searchBox.innerHTML = `<p>Không tìm thấy khách hàng</p>`;
+    }else{
+        searchBox.innerHTML = customerOption;
+    }
+}
+
+const setId = (e, customer) => {
+    e.target.parentNode.parentNode.querySelector(".id").value = customer[0]
+    e.target.parentNode.parentNode.querySelector(".name").value = customer[1]
+}
+
 const addToTable = (data) => {
     cost_price = 0;
     selling_price = 0;
@@ -192,6 +230,12 @@ const updateTable = async () => {
             if (orderJson.id) {
                 responseMessage.innerHTML = ``;
                 addToTable(itemsJson);
+                let customerName = document.getElementById("customer_name")
+                customerName.value = orderJson["customer_name"]
+                let customerId = document.getElementById("id")
+                customerId.value = orderJson["customer_id"]
+                let customerAdrress = document.getElementById("address")
+                customerAdrress.value = orderJson["address"]
                 let label1 = document.getElementById('label_1')
                 label1.value = orderJson["extra_label_1"]
                 let label2 = document.getElementById('label_2')
@@ -216,6 +260,11 @@ const updateTable = async () => {
 }
 async function submitInvoice() {
     let fail = false;
+    const customer = {
+        customer_id: document.getElementById("id").value,
+        customer_name: document.getElementById("customer_name").value,
+        address: document.getElementById("address").value,
+    };
     const items = [];
     document.querySelectorAll('#invoiceItems tr').forEach(row => {
         if (row.querySelector('.name').value==""||row.querySelector('.unit').value==""||row.querySelector('.qty-input').value==""||row.querySelector('.selling-price-input').value=="") {
@@ -246,6 +295,7 @@ async function submitInvoice() {
     }
     const formData = new FormData;
     formData.append("invoice_no",invoice_no)
+    formData.append("customer", JSON.stringify(customer))
     formData.append("items",JSON.stringify(items))
     formData.append("order", JSON.stringify(order))
     try {

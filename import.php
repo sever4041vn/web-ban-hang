@@ -27,7 +27,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Số lượng nhập</label>
-                            <input type="number" name="quantity" class="form-control" min="1" required>
+                            <input name="quantity" class="form-control" min="1" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Ghi chú</label>

@@ -33,7 +33,7 @@ const getProducts = async (search, page) => {
                 products = products + `<tr id=${product["id"]} data-id=${product["id"]}>
                 <td>${product["sku"]}</td>
                 <td>${product["name"]}</td>
-                <td ondblclick="changeStockFocus(this)" class="stock_quantity" data-stock="${product["stock_quantity"]}">${product["stock_quantity"]}</td>
+                <td ondblclick="changeStockFocus(this)" class="stock_quantity" data-stock="${parseFloat(product["stock_quantity"])}">${parseFloat(product["stock_quantity"])}</td>
                 <td>${product["unit"]}</td>
                 <td ondblclick="changePriceFocus(this)" class="cost_price" data-price="${product["cost_price"]}" data-show="true">
                     * ₫

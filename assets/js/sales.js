@@ -1,5 +1,4 @@
 const productIdSelect = document.getElementById("productSelect");
-const customerIdSelect = document.getElementById("customerSelect");
 const responseMessage = document.getElementById("response-message");
 
 document.addEventListener("keypress",(e)=>{
@@ -7,35 +6,18 @@ document.addEventListener("keypress",(e)=>{
         addToTable();
     }
 })
-// const productSelect = async () => {
-//     let products = []
-//     let productOption = '<option data-name="" data-cost-price="" data-selling-price="" data-stock="" data-unit="" value=""></option>';
-//     try {
-//         const response = await fetch(`actions/get_product.php`);
-//         const result = await response.json(); // Đợi phản hồi JSON từ PHP
-//         if (result.status === 'success') {
-//             products= JSON.parse(result.message);
-//         } else {
-//             products = [];
-//         }
-//     } catch (error) {
-//         products = [];
-//     }
-//     for (let i = 0; i < products.length; i++) {
-//         productOption = productOption + `
-//         <option data-name="${products[i]["name"]}" data-cost-price="${products[i]["cost_price"]}" data-selling-price="${products[i]["selling_price"]}" data-stock="${products[i]["stock_quanity"]}" data-unit="${products[i]["unit"]}" value="${products[i]["id"]}">${products[i]["sku"]} - ${products[i]["name"]}</option>
-//         `
-//     }
-//     productIdSelect.innerHTML = productOption;
-// }
-// productIdSelect.addEventListener("click",productSelect);
-// productSelect()
 
-const customerSelect =  async () => {
+document.querySelector(".name").addEventListener("focusin", (e)=>toggleShowSearchBox(e.target,"show"))
+document.querySelector(".name").addEventListener("focusout", (e)=>toggleShowSearchBox(e.target,"hide"))
+
+const searchCustomers = async (e) => {
+    let searchBox = e.target.parentNode.querySelector(".search-box");
+    e.target.parentNode.parentNode.querySelector(".id").value = 1
+    const search = e.target.value;
     let customers = []
-    let customerOption = '<option data-id="1" data-phone="" value="1">1 - A/C</option>';
+    let customerOption = '';
     try {
-        const response = await fetch(`actions/get_customer.php`);
+        const response = await fetch(`actions/get_customer.php?search=${search}`);
         const result = await response.json(); // Đợi phản hồi JSON từ PHP
         if (result.status === 'success') {
             customers= JSON.parse(result.message);
@@ -47,12 +29,21 @@ const customerSelect =  async () => {
     }
     for (let i = 0; i < customers.length; i++) {
         customerOption = customerOption + `
-        <option data-id="${customers[i]["id"]}" data-phone="${customers[i]["phone"]}" value="${customers[i]["id"]}">${customers[i]["id"]} - ${customers[i]["name"]}</option>
+        <button onclick='setId(event, [${customers[i]["id"]},"${customers[i]["name"]}"])' class="btn border btn-primary">${customers[i]["id"]} - ${customers[i]["name"]}</button>
         `
     }
-    customerIdSelect.innerHTML = customerOption;
+    if (customerOption=="") {
+        searchBox.innerHTML = `<p>Không tìm thấy khách hàng</p>`;
+    }else{
+        searchBox.innerHTML = customerOption;
+    }
 }
-customerSelect()
+
+const setId = (e, customer) => {
+    e.target.parentNode.parentNode.querySelector(".id").value = customer[0]
+    e.target.parentNode.parentNode.querySelector(".name").value = customer[1]
+}
+
 const addToTable = () => {
     cost_price = 0;
     selling_price = 0;
@@ -184,7 +175,8 @@ function updateTotal() {
 async function submitInvoice() {
     let fail = false;
     const customer = {
-        customer_id: customerIdSelect.value,
+        customer_id: document.getElementById("id").value,
+        customer_name: document.getElementById("customer_name").value,
         address: document.getElementById("address").value,
     };
     const items = [];

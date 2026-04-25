@@ -12,7 +12,7 @@ async function loadOrders(customer_name) {
                 <tr>
                     <td class="fw-bold text-primary">${o.invoice_no}</td>
                     <td><small>${new Date(o.created_at).toLocaleString('vi-VN')}</small></td>
-                    <td>${o.customer_name}</td>
+                    <td>${o.customer_name!=""?o.customer_name:o.customer_name_real}</td>
                     <td>${o.address}</td>
                     <td class="fw-bold text-success">${Number(o.final_amount).toLocaleString()} ₫</td>
                     <td class="fw-bold text-success">${Number(o.debt_amount).toLocaleString()} ₫</td>
