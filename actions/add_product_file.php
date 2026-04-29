@@ -2,17 +2,30 @@
 require_once '../config/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-try {
-    $message = array();
-    $file = $_FILES["file"]["tmp_name"];
-    if (($handle = fopen($file,"r"))) {
+    try {
+        $message = array();
+        // $file = $_FILES["file"]["tmp_name"];
+
+        $targetFilePath = 'uploads/' . basename($_FILES['file']['name']);
+        $fileType = pathinfo($targetFilePath, PATHINFO_EXTENSION);
+        if ($fileType == "xlsx") {
+            if (move_uploaded_file($_FILES['file']['tmp_name'], $targetFilePath)) {
+                
+                // Execute Python script
+                // Note: escapeshellarg() prevents hackers from injecting commands via filename
+                $command = "python py/excel.py " . escapeshellarg($targetFilePath);
+                $csvFilePath = trim(shell_exec($command));
+
+            }
+        }
+        if (($handle = fopen($csvFilePath,"r"))) {
             //Bỏ qua hàng đầu
             fgetcsv($handle, 1000, ",");
-    
+        
             $pdo->beginTransaction();
-    
+        
             $sqlAdd = "INSERT INTO products (sku, name, stock_quantity, unit, cost_price, selling_price) 
-                    VALUES (?, ?, ?, ?, ?, ?)";
+                        VALUES (?, ?, ?, ?, ?, ?)";
             $stmtAdd = $pdo->prepare($sqlAdd);
             $sqlUpdate = "UPDATE `products` SET name = ?, stock_quantity=stock_quantity+?, unit=?, cost_price=?, selling_price=? WHERE sku = ?";
             $stmtUpdate = $pdo->prepare($sqlUpdate);
@@ -47,11 +60,14 @@ try {
             }
             $pdo->commit();
             echo json_encode(['status' => 'success', 'message' => "Đã thêm $successRow, đã cập nhật $errorRow", "proudcts" => $message]);
+            unlink($targetFilePath);
+            unlink($csvFilePath);
             die;
+
+        }
+    }catch (PDOException $e) {
+        $pdo->rollBack();
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
     }
-}catch (PDOException $e) {
-    $pdo->rollBack();
-    echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
-}
 }
 ?>

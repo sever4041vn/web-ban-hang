@@ -14,7 +14,7 @@
         </div>
         <div class="card-body">
             <form id="add-product-file" method="POST">
-                <input id="file" type="file" class="custom-file-input" required accept=".csv">
+                <input id="file" type="file" class="custom-file-input" required accept=".xlsx">
                 <button class="btn btn-success" type="submit">Thêm sản phẩm</button>
             </form>
             <div id="response-message-file"></div>
