@@ -4,7 +4,7 @@ let searchValue = search.value
 let page = 1
 search.addEventListener("input", ()=>{
     searchValue = search.value
-    getProducts(searchValue)
+    getProducts(searchValue,page)
 })
 
 
@@ -174,7 +174,7 @@ const changePrice = async (product_id, cost_price, selling_price) => {
             div.remove();
         }, 3000);
     }
-    getProducts(searchValue)
+    getProducts(searchValue,page)
 }
 
 //Thay đổi tồn kho
@@ -218,7 +218,7 @@ const changeStock = async (product_id, stock_quantity) => {
             div.remove();
         }, 3000);
     }
-    getProducts(searchValue)
+    getProducts(searchValue,page)
 }
 
 function formatCurrency(input) {

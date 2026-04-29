@@ -1,6 +1,8 @@
 const productIdSelect = document.getElementById("productSelect");
 const responseMessage = document.getElementById("response-message");
 
+let selectProductCache = [];
+
 document.addEventListener("keypress",(e)=>{
     if (e.key=="Enter") {
         addToTable();
@@ -75,7 +77,12 @@ const addToTable = () => {
                     `;
     document.getElementById('invoiceItems').appendChild(tr);
     tr.querySelector(".name").addEventListener("focusin", (e)=>toggleShowSearchBox(e.target,"show"))
-    tr.querySelector(".name").addEventListener("focusout", (e)=>toggleShowSearchBox(e.target,"hide"))
+    tr.querySelector(".name").addEventListener("focusout", (e)=>{
+        if (selectProductCache.length != 0) {
+            addToRow(selectProductCache[0],selectProductCache[1])
+        }
+        toggleShowSearchBox(e.target,"hide");
+    })
     tr.querySelector(".name").focus();
 }
 
@@ -86,7 +93,7 @@ const toggleShowSearchBox = (target,action) => {
     }else if(action == "hide"){
         setTimeout(() => {
             searchBox.style.display = "none"
-        }, 150);
+        }, 100);
     }
 }
 
@@ -112,7 +119,7 @@ const searchProducts = async (e) => {
     }
     for (let i = 0; i < products.length; i++) {
         productOption = productOption + `
-        <button onclick='addToRow(event, [${products[i]["id"]},"${products[i]["name"].replace(/\n/g, "")}","${products[i]["unit"]}",${products[i]["cost_price"]},${products[i]["selling_price"]}])' class="btn border btn-primary">${products[i]["sku"]} - ${products[i]["name"]}</button>
+        <button onmouseover='selectProductCache=[event,[${products[i]["id"]},"${products[i]["name"].replace(/\n/g, "")}","${products[i]["unit"]}",${products[i]["cost_price"]},${products[i]["selling_price"]}]]' class="btn border btn-primary">${products[i]["sku"]} - ${products[i]["name"]}</button>
         `
     }
     if (productOption=="") {
@@ -123,6 +130,7 @@ const searchProducts = async (e) => {
 }
 
 const addToRow = (e, data) => {
+    selectProductCache = [];
     const row = e.target.closest('tr');
     const id = row.querySelector(".id");
     const name = row.querySelector(".name");
@@ -173,6 +181,10 @@ function updateTotal() {
 }
 
 async function submitInvoice() {
+    if(document.getElementById("id").value == ""){
+        responseMessage.innerHTML = `<div class="alert alert-danger">Vui lòng nhập tên khách hàng</div>`;
+        return;
+    }
     let fail = false;
     const customer = {
         customer_id: document.getElementById("id").value,
