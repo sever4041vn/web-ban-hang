@@ -8,7 +8,7 @@ def convert_to_csv(input_file):
         # Load the excel file
         df = pd.read_excel(input_file)
         # Export to CSV (index=False prevents adding an extra column for row numbers)
-        df.to_csv(output_file, index=False)
+        df.to_csv(output_file, index=False, encoding="utf-8-sig")
         print(output_file)
     except Exception as e:
         print(f"Error: {e}")
