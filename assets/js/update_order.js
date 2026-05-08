@@ -5,6 +5,7 @@ const parsedUrl = new URL(window.location.href);
 const params = new URLSearchParams(parsedUrl.search);
 const invoice_no = params.get("invoice_no");
 let selectProductCache = [];
+let selectPriceCache = [];
 document.addEventListener("keypress",(e)=>{
     if (e.key=="Enter") {
         addToTable();
@@ -69,12 +70,17 @@ const addToTable = (data) => {
                                     <input type="number" class="form-control qty-input" value="1" min="1" onchange="calculateRow(this)">
                                 </td>
                                 <td>
-                                    <input type="text" class="form-control" value="${Number(selling_price).toLocaleString('vi-VN')}" oninput="formatCurrency(this);calculateRow(this.parentNode.querySelector('.selling-price-input'))">
-                                    <input type="hidden" class="form-control selling-price-input" value="${selling_price}" onchange="calculateRow(this)">
-                                    <input style="display:none;" type="number" class="form-control cost-price-input" value="${cost_price}" onchange="calculateRow(this)">
+                                    <p class="mb-0 form-control cost-price-input-p" data-price="0" data-show="true">* ₫</p>
+                                    <input type="hidden" class="form-control cost-price" value="${cost_price}" onchange="calculateRow(this)">
                                 </td>
-                                    <td class="subtotal fw-bold">${Number(selling_price).toLocaleString('vi-VN')} ₫</td>
+                                <td class="position-relative">
+                                    <input type="text" class="form-control selling-price-input" value="${Number(selling_price).toLocaleString('vi-VN')}" oninput="formatCurrency(this);calculateRow(this.parentNode.querySelector('.selling-price-input'))">
+                                    <input type="hidden" class="form-control selling-price" value="${selling_price}">
+                                    <div style="display: none;" class="z-3 l-0 w-100 search-box price-choice bg-white position-absolute row"></div>    
+                                </td>
+                                <td class="subtotal fw-bold">${Number(selling_price).toLocaleString('vi-VN')} ₫</td>
                                 <td>                 
+                                    <button class="btn btn-sm btn-outline-warning" onclick="showCostPrice(this)">Hiện giá nhập</button>    
                                     <button class="btn btn-sm btn-outline-danger" onclick="removeRow(this)">Xóa</button>
                                 </td>
                         `;
@@ -83,9 +89,12 @@ const addToTable = (data) => {
         tr.querySelector(".name").addEventListener("focusout", (e)=>toggleShowSearchBox(e.target,"hide"))
         tr.querySelector(".name").focus();
 
+        tr.querySelector(".selling-price-input").addEventListener("focusin", (e)=>toggleShowSearchBox(e.target,"show"))
+        tr.querySelector(".selling-price-input").addEventListener("focusout", (e)=>toggleShowSearchBox(e.target,"hide"))
     }else{
 
         data.forEach(item=>{
+            console.log(item)
             const tr = document.createElement("tr");
             tr.innerHTML = `
                                     <td class="d-none">
@@ -102,22 +111,28 @@ const addToTable = (data) => {
                                         <input type="number" value="${Number(item["quantity"])}" class="form-control qty-input" onchange="calculateRow(this)">
                                     </td>
                                     <td>
-                                        <input type="text" class="form-control" value="${Number(item["selling_price"]).toLocaleString('vi-VN')}" oninput="formatCurrency(this);calculateRow(this.parentNode.querySelector('.selling-price-input'))">
-                                        <input type="hidden" class="form-control selling-price-input" value="${item["selling_price"]}" onchange="calculateRow(this)">
-                                        <input style="display:none;" type="number" class="form-control cost-price-input" value="${item["cost_price"]}" onchange="calculateRow(this)">
+                                        <p class="mb-0 form-control cost-price-input-p" data-price="${item["cost_price"]}" data-show="true">* ₫</p>
+                                        <input type="hidden" class="form-control cost-price" value="${item["cost_price"]}" onchange="calculateRow(this)">
                                     </td>
-                                        <td class="subtotal fw-bold">${Number(selling_price).toLocaleString('vi-VN')} ₫</td>
+                                    <td class="position-relative">
+                                        <input type="text" class="form-control selling-price-input" value="${Number(item["selling_price"]).toLocaleString('vi-VN')}" oninput="formatCurrency(this);calculateRow(this.parentNode.querySelector('.selling-price-input'))">
+                                        <input type="hidden" class="form-control selling-price" value="${item["selling_price"]}">
+                                        <div style="display: none;" class="z-3 l-0 w-100 search-box price-choice bg-white position-absolute row"></div>    
+                                    </td>
+                                    <td class="subtotal fw-bold">${Number(item["selling_price"]).toLocaleString('vi-VN')} ₫</td>
                                     <td>                 
+                                        <button class="btn btn-sm btn-outline-warning" onclick="showCostPrice(this)">Hiện giá nhập</button>    
                                         <button class="btn btn-sm btn-outline-danger" onclick="removeRow(this)">Xóa</button>
                                     </td>
                             `;  
 
                             document.getElementById('invoiceItems').appendChild(tr);
                             tr.querySelector(".name").addEventListener("focusin", (e)=>toggleShowSearchBox(e.target,"show"))
-                            tr.querySelector(".name").addEventListener("focusout", (e)=>{
-        toggleShowSearchBox(e.target,"hide");
-    })
-    tr.querySelector(".name").focus();
+                            tr.querySelector(".name").addEventListener("focusout", (e)=>toggleShowSearchBox(e.target,"hide"))
+                            tr.querySelector(".name").focus();
+
+                            tr.querySelector(".selling-price-input").addEventListener("focusin", (e)=>toggleShowSearchBox(e.target,"show"))
+                            tr.querySelector(".selling-price-input").addEventListener("focusout", (e)=>toggleShowSearchBox(e.target,"hide"))
                             calculateRow(tr.querySelector(".selling-price-input"));
                         })
     }
@@ -131,6 +146,9 @@ const toggleShowSearchBox = (target,action) => {
         if (selectProductCache.length != 0) {
             addToRow(selectProductCache[0],selectProductCache[1])
         }
+        if (selectPriceCache.length != 0) {
+            setPrice(selectPriceCache[0],selectPriceCache[1])
+        }
         setTimeout(() => {
             searchBox.style.display = "none"
         }, 100);
@@ -141,8 +159,12 @@ const searchProducts = async (e) => {
     let searchBox = e.target.parentNode.querySelector(".search-box");
     const search = e.target.value;
     const id = e.target.closest("tr").querySelector(".id");
-    const cost_price = e.target.closest("tr").querySelector(".cost-price-input");
+    const cost_price_p = e.target.closest("tr").querySelector(".cost-price-input-p");
+    const cost_price = e.target.closest("tr").querySelector(".cost-price");
     id.value = 1;
+    cost_price_p.innerHTML = "* ₫";
+    cost_price_p.setAttribute("data-show", "true")
+    cost_price_p.setAttribute("data-price", 0)
     cost_price.value =0;
     let products = []
     let productOption = '';
@@ -159,7 +181,7 @@ const searchProducts = async (e) => {
     }
     for (let i = 0; i < products.length; i++) {
         productOption = productOption + `
-        <button onmouseover='selectProductCache=[event,[${products[i]["id"]},"${products[i]["name"].replace(/\n/g, "")}","${products[i]["unit"]}",${products[i]["cost_price"]},${products[i]["selling_price"]}]]' class="btn border btn-primary">${products[i]["sku"]} - ${products[i]["name"]}</button>
+            <button onmouseover='selectProductCache=[event,[${products[i]["id"]},"${products[i]["name"].replace(/\n/g, "")}","${products[i]["unit"]}",${products[i]["cost_price"]},${products[i]["selling_price_1"]},${products[i]["selling_price_2"]}]]' class="btn border btn-primary">${products[i]["sku"]} - ${products[i]["name"]}</button>
         `
     }
     if (productOption=="") {
@@ -175,15 +197,24 @@ const addToRow = (e, data) => {
     const id = row.querySelector(".id");
     const name = row.querySelector(".name");
     const unit = row.querySelector(".unit");
-    const cost_price = row.querySelector(".cost-price-input")
-    const selling_price = row.querySelector(".selling-price-input");
+    const cost_price_p = row.querySelector(".cost-price-input-p");
+    const cost_price = row.querySelector(".cost-price");
+    const selling_price = row.querySelector(".selling-price");
+    const price_choice = row.querySelector(".price-choice");
     id.value = data[0];
     // ẩn cửa sổ search
     name.value = "";
     toggleShowSearchBox(name,"hide")
     name.value = data[1];
     unit.value = data[2];
+    cost_price_p.innerText = "* ₫";
+    cost_price_p.setAttribute("data-show", "true");
+    cost_price_p.setAttribute("data-price", data[3]);
     cost_price.value = data[3];
+    price_choice.innerHTML = `
+        <button onmouseover='selectPriceCache=[event,${data[4]}]' class="btn border btn-primary">${Number(data[4]).toLocaleString('vi-VN')} ₫</button>
+        <button onmouseover='selectPriceCache=[event,${data[5]}]' class="btn border btn-primary">${Number(data[5]).toLocaleString('vi-VN')} ₫</button>
+    `
     selling_price.parentNode.querySelectorAll("input")[0].value = Number(data[4]).toLocaleString('vi-VN')
     selling_price.value = data[4];
     // console.log(data)
@@ -191,15 +222,34 @@ const addToRow = (e, data) => {
     addToTable();
 } 
 
+const setPrice = (e, selling_price) => {
+    const selling_price_input = e.target.parentNode.parentNode.querySelector(".selling-price")
+    selling_price_input.parentNode.querySelectorAll("input")[0].value = Number(selling_price).toLocaleString('vi-VN')
+    selling_price_input.value = selling_price;
+    selectPriceCache = [];
+    calculateRow(e.target);
+}
+
 function removeRow(btn) {
     btn.closest('tr').remove();
     updateTotal();
 }
 
+function showCostPrice(btn) {
+    const cost_price_input_p = btn.parentNode.parentNode.querySelector(".cost-price-input-p");
+    if (cost_price_input_p.getAttribute("data-show")=="true") {
+        cost_price_input_p.innerText = `${Intl.NumberFormat('vi-VN').format(cost_price_input_p.getAttribute("data-price"))} ₫`;
+        cost_price_input_p.setAttribute("data-show", "false")
+    }else{
+        cost_price_input_p.innerText = `* ₫`;
+        cost_price_input_p.setAttribute("data-show", "true")
+    }
+}
+
 function calculateRow(input) {
     const row = input.closest('tr');
     const qty = row.querySelector('.qty-input').value;
-    const selling_price = row.querySelector('.selling-price-input').value;
+    const selling_price = row.querySelector('.selling-price').value;
     const subtotal = qty * selling_price;
     row.querySelector('.subtotal').innerText = subtotal.toLocaleString() + " ₫";
     updateTotal();
@@ -213,7 +263,7 @@ function updateTotal() {
     // console.log(document.getElementById("paidDisplay").querySelector(".paid-input").value)
     document.querySelectorAll('#invoiceItems tr').forEach(row => {
         const qty = row.querySelector('.qty-input').value;
-        const selling_price = row.querySelector('.selling-price-input').value;
+        const selling_price = row.querySelector('.selling-price').value;
         total += qty * selling_price;
     });
     totalDisplay.innerText = (total).toLocaleString('vi-VN') + " ₫";
@@ -279,7 +329,7 @@ async function submitInvoice() {
     };
     const items = [];
     document.querySelectorAll('#invoiceItems tr').forEach(row => {
-        if (row.querySelector('.name').value==""||row.querySelector('.unit').value==""||row.querySelector('.qty-input').value==""||row.querySelector('.selling-price-input').value=="") {
+        if (row.querySelector('.name').value==""||row.querySelector('.unit').value==""||row.querySelector('.qty-input').value==""||row.querySelector('.selling-price').value=="") {
             // console.log(row.querySelector('.name').value)
             fail = true;
             return;
@@ -289,8 +339,8 @@ async function submitInvoice() {
             name: row.querySelector('.name').value,
             unit: row.querySelector('.unit').value,
             quantity: row.querySelector('.qty-input').value,
-            cost_price: row.querySelector('.cost-price-input').value,
-            selling_price: row.querySelector('.selling-price-input').value
+            cost_price: row.querySelector('.cost-price').value,
+            selling_price: row.querySelector('.selling-price').value
         });
     });
 
