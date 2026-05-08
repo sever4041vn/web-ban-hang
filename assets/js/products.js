@@ -38,12 +38,11 @@ const getProducts = async (search, page) => {
                 <td ondblclick="changePriceFocus(this)" class="cost_price" data-price="${product["cost_price"]}" data-show="true">
                     * ₫
                 </td>
-                <td ondblclick="changePriceFocus(this)" class="selling_price" data-price="${product["selling_price"]}">
-                    ${Intl.NumberFormat('vi-VN').format(product["selling_price"])} ₫
-                    
+                <td ondblclick="changePriceFocus(this)" class="selling_price_1" data-price="${product["selling_price_1"]}">
+                    ${Intl.NumberFormat('vi-VN').format(product["selling_price_1"])} ₫
                 </td>
-                <td>
-                    ${profitTotalSpan}
+                <td ondblclick="changePriceFocus(this)" class="selling_price_2" data-price="${product["selling_price_2"]}">
+                    ${Intl.NumberFormat('vi-VN').format(product["selling_price_2"])} ₫
                 </td>
                 <td>
                     <button onclick="showHideProfit(${product["id"]})" class="btn btn-sm btn-outline-secondary">Xem giá nhập</button>
@@ -78,15 +77,12 @@ toPage("action")
 //Xem giá nhập
 const showHideProfit = (id) => {
     const div =document.getElementById(id).getElementsByClassName("cost_price")[0];
-    const profit =document.getElementById(id).getElementsByClassName("profit")[0];
 
     if (div.getAttribute("data-show")=="true") {
         div.innerHTML = `${Intl.NumberFormat('vi-VN').format(div.getAttribute("data-price"))} ₫`;
-        profit.innerHTML = `${Intl.NumberFormat('vi-VN').format(profit.getAttribute("data-price"))} ₫`;
         div.setAttribute("data-show", "false")
     }else{
         div.innerHTML = `* ₫`;
-        profit.innerHTML = `* ₫`;
         div.setAttribute("data-show", "true")
     }
 }
@@ -110,7 +106,8 @@ const changePriceFocus = (target) => {
     const product = target.parentElement
     const product_id = product.getAttribute("data-id")
     const cost_price = product.getElementsByClassName("cost_price")[0].getAttribute("data-price")
-    const selling_price = product.getElementsByClassName("selling_price")[0].getAttribute("data-price")
+    const selling_price_1 = product.getElementsByClassName("selling_price_1")[0].getAttribute("data-price")
+    const selling_price_2 = product.getElementsByClassName("selling_price_2")[0].getAttribute("data-price")
     target.innerHTML = "";
     const input = document.createElement("input");
     input.className = "form-control";
@@ -128,19 +125,21 @@ const changePriceFocus = (target) => {
     input2.type = "number"
     target.appendChild(input2);
     if (target.className == "cost_price" ) {
-        input.addEventListener("focusout",()=>changePrice(product_id,input2.value,selling_price))
-
+        input.addEventListener("focusout",()=>changePrice(product_id,input2.value,selling_price_1,selling_price_2))
+    }else if (target.className == "selling_price_1" ){
+        input.addEventListener("focusout",()=>changePrice(product_id,cost_price,input2.value,selling_price_2))
     }else{
-        input.addEventListener("focusout",()=>changePrice(product_id,cost_price,input2.value))
+        input.addEventListener("focusout",()=>changePrice(product_id,cost_price,selling_price_1,input2.value))
     }
 }
-const changePrice = async (product_id, cost_price, selling_price) => {
+const changePrice = async (product_id, cost_price, selling_price_1, selling_price_2) => {
     // console.log(product_id, cost_price, selling_price)
     try {
         const formData = new FormData;
         formData.append("product_id",product_id);
         formData.append("cost_price",cost_price);
-        formData.append("selling_price",selling_price);
+        formData.append("selling_price_1",selling_price_1);
+        formData.append("selling_price_2",selling_price_2);
         response = await fetch(`actions/change_price.php`,{
             method:"POST",
             body: formData

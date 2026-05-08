@@ -3,19 +3,8 @@ const addProduct = document.getElementById("add-product");
 const responseMessage = document.getElementById("response-message");
 
 const costPrice = document.getElementById("cost_price");
-const sellingPrice = document.getElementById("selling_price"); 
-const profit = document.getElementById("profit");
-
-
-//Tính lợi nhuận
-const profitCount = () => {
-    const profitTotal = sellingPrice.value - costPrice.value;
-    if (profitTotal>0) {
-        profit.innerHTML = `<div class="alert alert-success">${Number(profitTotal).toLocaleString('vi-VN')}</div>`
-    }else{
-        profit.innerHTML = `<div class="alert alert-danger">${Number(profitTotal).toLocaleString('vi-VN')}</div>`
-    }
-}
+const sellingPrice1 = document.getElementById("selling_price_1"); 
+const sellingPrice2 = document.getElementById("selling_price_2"); 
 
 //Thêm sản phẩm
 addProduct.addEventListener("submit", async (e)=>{
@@ -35,7 +24,6 @@ addProduct.addEventListener("submit", async (e)=>{
         } else {
             responseMessage.innerHTML = `<div class="alert alert-danger">${result.message}</div>`;
         }
-        profitCount()
     } catch (error) {
         console.log(error)
         responseMessage.innerHTML = `<div class="alert alert-danger">Lỗi kết nối hệ thống!</div>`;

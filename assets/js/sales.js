@@ -78,9 +78,6 @@ const addToTable = () => {
     document.getElementById('invoiceItems').appendChild(tr);
     tr.querySelector(".name").addEventListener("focusin", (e)=>toggleShowSearchBox(e.target,"show"))
     tr.querySelector(".name").addEventListener("focusout", (e)=>{
-        if (selectProductCache.length != 0) {
-            addToRow(selectProductCache[0],selectProductCache[1])
-        }
         toggleShowSearchBox(e.target,"hide");
     })
     tr.querySelector(".name").focus();
@@ -91,6 +88,9 @@ const toggleShowSearchBox = (target,action) => {
     if (action=="show") {
         searchBox.style.display = "block"
     }else if(action == "hide"){
+        if (selectProductCache.length != 0) {
+            addToRow(selectProductCache[0],selectProductCache[1])
+        }
         setTimeout(() => {
             searchBox.style.display = "none"
         }, 100);

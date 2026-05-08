@@ -94,3 +94,8 @@ CREATE TABLE inventory_log (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (product_id) REFERENCES products(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+8/5/2026
+ALTER TABLE `products` CHANGE `selling_price` `selling_price_1` DECIMAL(15,2) NULL DEFAULT '0.00';
+ALTER TABLE `products` ADD `selling_price_2` DECIMAL(15,2) NULL DEFAULT '0.00' AFTER `selling_price_1`;

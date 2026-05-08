@@ -32,8 +32,8 @@
                 <th>Số Lượng Tồn Kho</th>
                 <th>Đơn Vị Tính</th>
                 <th>Giá Nhập</th>
-                <th>Giá Bán</th>
-                <th>Lợi Nhuận</th>
+                <th>Giá Bán 1</th>
+                <th>Giá Bán 2</th>
                 <th>Thao tác</th>
             </tr>
         </thead>

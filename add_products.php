@@ -45,24 +45,26 @@
                     </div>
                     <div class="col-md-4 mb-3">
                         <label class="form-label fw-bold">Giá vốn (VNĐ)</label>
-                        <input type="text" class="form-control" value="0" oninput="formatCurrency(this);profitCount()">
+                        <input type="text" class="form-control" value="0" oninput="formatCurrency(this);">
                         <input id="cost_price" type="hidden" name="cost_price" class="form-control" value="0">
                     </div>
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label fw-bold">Giá bán (VNĐ)</label>
-                        <input type="text" class="form-control" value="0" oninput="formatCurrency(this);profitCount()">
-                        <input id="selling_price" type="hidden" name="selling_price" class="form-control" value="0">
-                    </div>
-                </div>
 
+                </div>
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <label class="form-label fw-bold">Đơn vị</label>
                         <select id="unit" name="unit" class="form-select">
                         </select>
                     </div>
-                    <div id="profit" class="col-md-4 mb-3">
-                        
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-bold">Giá bán 1(VNĐ)</label>
+                        <input type="text" class="form-control" value="0" oninput="formatCurrency(this);">
+                        <input id="selling_price_1" type="hidden" name="selling_price_1" class="form-control" value="0">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-bold">Giá bán 2(VNĐ)</label>
+                        <input type="text" class="form-control" value="0" oninput="formatCurrency(this);">
+                        <input id="selling_price_2" type="hidden" name="selling_price_2" class="form-control" value="0">
                     </div>
                 </div>
 

@@ -18,14 +18,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
 
                 // OPTIMIZATION: Use "ON DUPLICATE KEY UPDATE"
                 // This requires your 'sku' column to have a UNIQUE index in MySQL
-                $sql = "INSERT INTO products (sku, name, stock_quantity, unit, cost_price, selling_price) 
-                        VALUES (:sku, :name, :qty, :unit, :cost, :sell)
+                $sql = "INSERT INTO products (sku, name, stock_quantity, unit, cost_price, selling_price_1, selling_price_2) 
+                        VALUES (:sku, :name, :qty, :unit, :cost, :selling_1, :selling_2)
                         ON DUPLICATE KEY UPDATE 
                         name = VALUES(name), 
                         stock_quantity = stock_quantity + VALUES(stock_quantity),
                         unit = VALUES(unit), 
                         cost_price = VALUES(cost_price), 
-                        selling_price = VALUES(selling_price)";
+                        selling_price_1 = VALUES(selling_price_1),
+                        selling_price_2 = VALUES(selling_price_2)";
                 
                 $stmt = $pdo->prepare($sql);
                 $count = 0;
@@ -39,7 +40,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
                         ':qty'  => (float)$data[2],
                         ':unit' => $data[3],
                         ':cost' => str_replace(['.', ','], '', $data[4]),
-                        ':sell' => str_replace(['.', ','], '', $data[5])
+                        ':selling_1' => str_replace(['.', ','], '', $data[5]),
+                        ':selling_2' => str_replace(['.', ','], '', $data[6]),
                     ]);
                     $count++;
                 }
