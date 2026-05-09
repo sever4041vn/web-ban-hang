@@ -2,7 +2,6 @@ const productIdSelect = document.getElementById("productSelect");
 const responseMessage = document.getElementById("response-message");
 
 let selectProductCache = [];
-let selectPriceCache = [];
 
 document.addEventListener("keypress",(e)=>{
     if (e.key=="Enter") {
@@ -70,10 +69,9 @@ const addToTable = () => {
                                 <p class="mb-0 form-control cost-price-input-p" data-price="0" data-show="true">* ₫</p>
                                 <input type="hidden" class="form-control cost-price" value="${cost_price}" onchange="calculateRow(this)">
                             </td>
-                            <td class="position-relative">
+                            <td class="selling-price-cotainer" class="position-relative">
                                 <input type="text" class="form-control selling-price-input" value="${Number(selling_price).toLocaleString('vi-VN')}" oninput="formatCurrency(this);calculateRow(this.parentNode.querySelector('.selling-price-input'))">
                                 <input type="hidden" class="form-control selling-price" value="${selling_price}">
-                                <div style="display: none;" class="z-3 l-0 w-100 search-box price-choice bg-white position-absolute row"></div>    
                             </td>
                             <td class="subtotal fw-bold">${Number(selling_price).toLocaleString('vi-VN')} ₫</td>
                             <td>                 
@@ -85,9 +83,6 @@ const addToTable = () => {
     tr.querySelector(".name").addEventListener("focusin", (e)=>toggleShowSearchBox(e.target,"show"))
     tr.querySelector(".name").addEventListener("focusout", (e)=>toggleShowSearchBox(e.target,"hide"))
     tr.querySelector(".name").focus();
-
-    tr.querySelector(".selling-price-input").addEventListener("focusin", (e)=>toggleShowSearchBox(e.target,"show"))
-    tr.querySelector(".selling-price-input").addEventListener("focusout", (e)=>toggleShowSearchBox(e.target,"hide"))
 }
 
 const toggleShowSearchBox = (target,action) => {
@@ -97,9 +92,6 @@ const toggleShowSearchBox = (target,action) => {
     }else if(action == "hide"){
         if (selectProductCache.length != 0) {
             addToRow(selectProductCache[0],selectProductCache[1])
-        }
-        if (selectPriceCache.length != 0) {
-            setPrice(selectPriceCache[0],selectPriceCache[1])
         }
         setTimeout(() => {
             searchBox.style.display = "none"
@@ -113,11 +105,16 @@ const searchProducts = async (e) => {
     const id = e.target.closest("tr").querySelector(".id");
     const cost_price_p = e.target.closest("tr").querySelector(".cost-price-input-p");
     const cost_price = e.target.closest("tr").querySelector(".cost-price");
+    const selling_price_cotainer = e.target.closest("tr").querySelector(".selling-price-cotainer");
     id.value = 1;
     cost_price_p.innerHTML = "* ₫";
     cost_price_p.setAttribute("data-show", "true")
     cost_price_p.setAttribute("data-price", 0)
     cost_price.value =0;
+    selling_price_cotainer.innerHTML = `
+        <input type="text" class="form-control selling-price-input" value="0" oninput="formatCurrency(this);calculateRow(this.parentNode.querySelector('.selling-price-input'))">
+        <input type="hidden" class="form-control selling-price" value="0">
+    `
     let products = []
     let productOption = '';
     try {
@@ -151,8 +148,7 @@ const addToRow = (e, data) => {
     const unit = row.querySelector(".unit");
     const cost_price_p = row.querySelector(".cost-price-input-p");
     const cost_price = row.querySelector(".cost-price");
-    const selling_price = row.querySelector(".selling-price");
-    const price_choice = row.querySelector(".price-choice");
+    const selling_price_cotainer = row.querySelector(".selling-price-cotainer");
     id.value = data[0];
     // ẩn cửa sổ search
     name.value = "";
@@ -163,25 +159,50 @@ const addToRow = (e, data) => {
     cost_price_p.setAttribute("data-show", "true");
     cost_price_p.setAttribute("data-price", data[3]);
     cost_price.value = data[3];
-    price_choice.innerHTML = `
-        <button onmouseover='selectPriceCache=[event,${data[4]}]' class="btn border btn-primary">${Number(data[4]).toLocaleString('vi-VN')} ₫</button>
-        <button onmouseover='selectPriceCache=[event,${data[5]}]' class="btn border btn-primary">${Number(data[5]).toLocaleString('vi-VN')} ₫</button>
+    selling_price_cotainer.innerHTML = `
+        <div>
+            <input type="hidden" class="form-control selling-price" value="${data[4]}">
+        </div>
+        <div class="form-check m-0">
+            <input class="form-check-input price-radio" type="radio" id="price_1" onchange="updateSellingPrice(event);" checked>
+            <label class="form-check-label text-primary" for="price_1" style="cursor: pointer;">
+                <input type="text" class="form-control" value="${Number(data[4]).toLocaleString('vi-VN')}" oninput="formatCurrency(this);updateSellingPrice(event);">
+                <input type="hidden" class="form-control selling-price-choice" value="${data[4]}">
+            </label>
+        </div>
+        <div class="form-check m-0">
+            <input class="form-check-input price-radio" id="price_2" type="radio" onchange="updateSellingPrice(event);">
+            <label class="form-check-label text-success" for="price_2" style="cursor: pointer;">
+                <input type="text" class="form-control" value="${Number(data[5]).toLocaleString('vi-VN')}" oninput="formatCurrency(this);updateSellingPrice(event);">
+                <input type="hidden" class="form-control selling-price-choice" value="${data[5]}">
+            </label>
+        </div>
     `
-    selling_price.parentNode.querySelectorAll("input")[0].value = Number(data[4]).toLocaleString('vi-VN')
-    selling_price.value = data[4];
     // console.log(data)
     calculateRow(e.target);
     addToTable();
 } 
 
-const setPrice = (e, selling_price) => {
-    const selling_price_input = e.target.parentNode.parentNode.querySelector(".selling-price")
-    selling_price_input.parentNode.querySelectorAll("input")[0].value = Number(selling_price).toLocaleString('vi-VN')
-    selling_price_input.value = selling_price;
-    selectPriceCache = [];
+const updateSellingPrice = (e) => {
+    const selling_price_cotainer = e.target.closest("td")
+    const selling_price = selling_price_cotainer.querySelector(".selling-price")
+    const selling_price_choice = selling_price_cotainer.querySelectorAll(".selling-price-choice")
+    if(e.target.id=="price_1"){
+        selling_price_cotainer.querySelector("#price_2").checked = false
+        selling_price.value = selling_price_choice[0].value
+    }else if(e.target.id=="price_2"){
+        selling_price_cotainer.querySelector("#price_1").checked = false
+        selling_price.value = selling_price_choice[1].value
+    }else{
+        selling_price_cotainer.querySelectorAll(".price-radio").forEach(input => {
+            if (input.checked) {
+                selling_price.value = input.parentNode.querySelector(".selling-price-choice").value
+            }
+        });
+    }
+
     calculateRow(e.target);
 }
-
 
 function removeRow(btn) {
     btn.closest('tr').remove();
