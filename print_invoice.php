@@ -111,7 +111,7 @@ $items = $itemStmt->fetchAll();
                     <td class="p-0"><?= $item['name'] ?><br></td>
                     <td class="text-center p-0"><?= $item['unit'] ?></td>
                     <td class="text-center p-0"><?= (float)$item['quantity'] ?></td>
-                    <td class="text-end p-0"><?= number_format($item['selling_price'], 0, ',', '.') ?></td>
+                    <td class="text-end p-0"><?= number_format($item['selling_price_'.($item["choice"])], 0, ',', '.') ?></td>
                     <td class="text-end p-0"><?= number_format($item['subtotal'], 0, ',', '.') ?></td>
                 </tr>
                 <?php endforeach; ?>

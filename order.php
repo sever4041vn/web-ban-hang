@@ -42,10 +42,11 @@
                                 <th class="mw-50">Sản phẩm</th>
                                 <th width="100">Đơn vị tính</th>
                                 <th width="100">Số lượng</th>
-                                <th width="150">Giá gốc</th>
-                                <th width="150">Đơn giá</th>
+                                <th width="150">Đơn giá 1</th>
+                                <th width="150">Đơn giá 2</th>
                                 <th width="150">Thành tiền</th>
                                 <th width="100"></th>
+                                <th width="50"></th>
                             </tr>
                         </thead>
                         <tbody id="invoiceItems">

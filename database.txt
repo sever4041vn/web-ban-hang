@@ -96,6 +96,11 @@ CREATE TABLE inventory_log (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
-8/5/2026
+--8/5/2026
 ALTER TABLE `products` CHANGE `selling_price` `selling_price_1` DECIMAL(15,2) NULL DEFAULT '0.00';
 ALTER TABLE `products` ADD `selling_price_2` DECIMAL(15,2) NULL DEFAULT '0.00' AFTER `selling_price_1`;
+
+--9/5
+ALTER TABLE `order_items` CHANGE `selling_price` `selling_price_1` DECIMAL(15,2) NULL DEFAULT '0.00';
+ALTER TABLE `order_items` ADD `selling_price_2` DECIMAL(15,2) NULL DEFAULT '0.00' AFTER `selling_price_1`;
+ALTER TABLE `order_items` ADD `choice` INT(1) NOT NULL DEFAULT '1' AFTER `selling_price_2`;

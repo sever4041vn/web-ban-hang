@@ -47,8 +47,8 @@ const setId = (e, customer) => {
 }
 
 const addToTable = () => {
-    cost_price = 0;
-    selling_price = 0;
+    const cost_price = 0;
+    const selling_price = 0;
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
@@ -65,17 +65,34 @@ const addToTable = () => {
                             <td>
                                 <input type="number" class="form-control qty-input" value="1" min="1" onchange="calculateRow(this)">
                             </td>
-                            <td>
-                                <p class="mb-0 form-control cost-price-input-p" data-price="0" data-show="true">* ₫</p>
-                                <input type="hidden" class="form-control cost-price" value="${cost_price}" onchange="calculateRow(this)">
+                            <td class="selling-price-cotainer">
+                                <input type="text" class="form-control selling-price-input" value="${Number(selling_price).toLocaleString('vi-VN')}" oninput="formatCurrency(this);calculateRow(this.parentNode.querySelector('.selling-price-input'))">
+                                <input type="hidden" class="form-control selling-price" value="${selling_price}">
                             </td>
                             <td class="selling-price-cotainer" class="position-relative">
                                 <input type="text" class="form-control selling-price-input" value="${Number(selling_price).toLocaleString('vi-VN')}" oninput="formatCurrency(this);calculateRow(this.parentNode.querySelector('.selling-price-input'))">
                                 <input type="hidden" class="form-control selling-price" value="${selling_price}">
                             </td>
-                            <td class="subtotal fw-bold">${Number(selling_price).toLocaleString('vi-VN')} ₫</td>
+                            <td class="subtotal fw-bold">
+                                <div class="form-check m-0">
+                                    <input style="cursor: pointer;" class="form-check-input price-radio" type="radio" id="price_1" value="${0}" onchange="updateSubTotal(event);" checked>
+                                    <label class="form-check-label text-primary" >
+                                        <p class="subtotal_choice">${Number(0).toLocaleString('vi-VN')} ₫</p>
+                                    </label>
+                                </div>
+                                <div class="form-check m-0">
+                                    <input style="cursor: pointer;" class="form-check-input price-radio" id="price_2" value="${0}" type="radio" onchange="updateSubTotal(event);">
+                                    <label class="form-check-label text-success">
+                                        <p class="subtotal_choice">${Number(0).toLocaleString('vi-VN')} ₫</p>
+                                    </label>
+                                </div>
+                            </td>
                             <td>                 
+                                <p class="mb-0 form-control cost-price-input-p" data-price="0" data-show="true">* ₫</p>
+                                <input type="hidden" class="form-control cost-price" value="${cost_price}" onchange="calculateRow(this)">
                                 <button class="btn btn-sm btn-outline-warning" onclick="showCostPrice(this)">Hiện giá nhập</button>    
+                            </td>
+                            <td>
                                 <button class="btn btn-sm btn-outline-danger" onclick="removeRow(this)">Xóa</button>
                             </td>
                     `;
@@ -105,16 +122,18 @@ const searchProducts = async (e) => {
     const id = e.target.closest("tr").querySelector(".id");
     const cost_price_p = e.target.closest("tr").querySelector(".cost-price-input-p");
     const cost_price = e.target.closest("tr").querySelector(".cost-price");
-    const selling_price_cotainer = e.target.closest("tr").querySelector(".selling-price-cotainer");
+    const selling_price_cotainers = e.target.closest("tr").querySelectorAll(".selling-price-cotainer");
     id.value = 1;
     cost_price_p.innerHTML = "* ₫";
     cost_price_p.setAttribute("data-show", "true")
     cost_price_p.setAttribute("data-price", 0)
     cost_price.value =0;
-    selling_price_cotainer.innerHTML = `
-        <input type="text" class="form-control selling-price-input" value="0" oninput="formatCurrency(this);calculateRow(this.parentNode.querySelector('.selling-price-input'))">
-        <input type="hidden" class="form-control selling-price" value="0">
-    `
+    for (let i = 1; i < selling_price_cotainers.length; i++) {
+        selling_price_cotainers[i].innerHTML = `
+            <input type="text" class="form-control selling-price-input" value="0" oninput="formatCurrency(this);calculateRow(this.parentNode.querySelector('.selling-price-input'))">
+            <input type="hidden" class="form-control selling-price" value="0">
+        `
+    }
     let products = []
     let productOption = '';
     try {
@@ -148,7 +167,7 @@ const addToRow = (e, data) => {
     const unit = row.querySelector(".unit");
     const cost_price_p = row.querySelector(".cost-price-input-p");
     const cost_price = row.querySelector(".cost-price");
-    const selling_price_cotainer = row.querySelector(".selling-price-cotainer");
+    const selling_price_cotainers = row.querySelectorAll(".selling-price-cotainer");
     id.value = data[0];
     // ẩn cửa sổ search
     name.value = "";
@@ -159,46 +178,23 @@ const addToRow = (e, data) => {
     cost_price_p.setAttribute("data-show", "true");
     cost_price_p.setAttribute("data-price", data[3]);
     cost_price.value = data[3];
-    selling_price_cotainer.innerHTML = `
-        <div>
-            <input type="hidden" class="form-control selling-price" value="${data[4]}">
-        </div>
-        <div class="form-check m-0">
-            <input class="form-check-input price-radio" type="radio" id="price_1" onchange="updateSellingPrice(event);" checked>
-            <label class="form-check-label text-primary" for="price_1" style="cursor: pointer;">
-                <input type="text" class="form-control" value="${Number(data[4]).toLocaleString('vi-VN')}" oninput="formatCurrency(this);updateSellingPrice(event);">
-                <input type="hidden" class="form-control selling-price-choice" value="${data[4]}">
-            </label>
-        </div>
-        <div class="form-check m-0">
-            <input class="form-check-input price-radio" id="price_2" type="radio" onchange="updateSellingPrice(event);">
-            <label class="form-check-label text-success" for="price_2" style="cursor: pointer;">
-                <input type="text" class="form-control" value="${Number(data[5]).toLocaleString('vi-VN')}" oninput="formatCurrency(this);updateSellingPrice(event);">
-                <input type="hidden" class="form-control selling-price-choice" value="${data[5]}">
-            </label>
-        </div>
-    `
+    for (let i = 0; i < selling_price_cotainers.length; i++) {
+        selling_price_cotainers[i].innerHTML = `
+            <input type="text" class="form-control selling-price-input" value="${Number(data[i+4]).toLocaleString('vi-VN')}" oninput="formatCurrency(this);calculateRow(this.parentNode.querySelector('.selling-price-input'))">
+            <input type="hidden" class="form-control selling-price" value="${data[i+4]}">
+        `
+    }
     // console.log(data)
     calculateRow(e.target);
     addToTable();
 } 
 
-const updateSellingPrice = (e) => {
+const updateSubTotal = (e) => {
     const selling_price_cotainer = e.target.closest("td")
-    const selling_price = selling_price_cotainer.querySelector(".selling-price")
-    const selling_price_choice = selling_price_cotainer.querySelectorAll(".selling-price-choice")
     if(e.target.id=="price_1"){
         selling_price_cotainer.querySelector("#price_2").checked = false
-        selling_price.value = selling_price_choice[0].value
     }else if(e.target.id=="price_2"){
         selling_price_cotainer.querySelector("#price_1").checked = false
-        selling_price.value = selling_price_choice[1].value
-    }else{
-        selling_price_cotainer.querySelectorAll(".price-radio").forEach(input => {
-            if (input.checked) {
-                selling_price.value = input.parentNode.querySelector(".selling-price-choice").value
-            }
-        });
     }
 
     calculateRow(e.target);
@@ -223,9 +219,13 @@ function showCostPrice(btn) {
 function calculateRow(input) {
     const row = input.closest('tr');
     const qty = row.querySelector('.qty-input').value;
-    const selling_price = row.querySelector('.selling-price').value;
-    const subtotal = qty * selling_price;
-    row.querySelector('.subtotal').innerText = subtotal.toLocaleString('vi-VN') + " ₫";
+    const selling_prices = row.querySelectorAll('.selling-price');
+    const subtotal_choices = row.querySelector('.subtotal').querySelectorAll("div");
+    for (let i = 0; i < subtotal_choices.length; i++) {
+        const subtotal = selling_prices[i].value * qty
+        subtotal_choices[i].querySelector("input").value = subtotal;
+        subtotal_choices[i].querySelector("p").innerText = subtotal.toLocaleString('vi-VN') + " ₫";
+    }
     updateTotal();
 }
 
@@ -236,8 +236,13 @@ function updateTotal() {
     let amount2 = document.getElementById('amount_2')
     document.querySelectorAll('#invoiceItems tr').forEach(row => {
         const qty = row.querySelector('.qty-input').value;
-        const selling_price = row.querySelector('.selling-price').value;
-        total += qty * selling_price;
+        const selling_prices = row.querySelectorAll('.selling-price');
+        const price_radio_checked = row.querySelector('.price-radio:checked');
+        if (price_radio_checked.id == "price_1") {
+            total += qty * selling_prices[0].value;
+        }else{
+            total += qty * selling_prices[1].value;
+        }
     });
     totalDisplay.innerText = (total).toLocaleString('vi-VN') + " ₫";
     amount2.parentNode.querySelector(".amount").value = total + (amount1.value)*1
@@ -268,7 +273,11 @@ async function submitInvoice() {
             unit: row.querySelector('.unit').value,
             quantity: row.querySelector('.qty-input').value,
             cost_price: row.querySelector('.cost-price').value,
-            selling_price: row.querySelector('.selling-price').value
+            selling_prices: [
+                row.querySelectorAll('.selling-price')[0].value,
+                row.querySelectorAll('.selling-price')[1].value
+            ],
+            choice: row.querySelector('.price-radio:checked')?.id.split('_').pop() || "",
         });
     });
 

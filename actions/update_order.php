@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // 2.2 Lấy từ kho
         $stmtReduceStock  = $pdo->prepare("UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ?");
         // 2.3 Thêm từng sản phẩm vào đơn hàng
-        $stmtInsertItem   = $pdo->prepare("INSERT INTO order_items (order_id, product_id, name, unit, quantity, cost_price, selling_price, subtotal) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmtInsertItem   = $pdo->prepare("INSERT INTO order_items (order_id, product_id, name, unit, quantity, cost_price, selling_price_1, selling_price_2, choice, subtotal) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         // 2.4 Nhật ký kho
         $stmtLog          = $pdo->prepare("INSERT INTO inventory_log (product_id, type, quantity, reference_id, note) VALUES (?, 'export', ?, ?, ?)");
 
@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $total_amount = 0;
         $cost_amount = 0;
         foreach ($items as $item) {
-            $total_amount += $item['quantity'] * $item['selling_price'];
+            $total_amount += $item['quantity'] * $item['selling_prices'][$item["choice"]-1];
             $cost_amount += $item['quantity'] * $item['cost_price'];
         }
         $profit_amount = $total_amount - $cost_amount;
@@ -66,13 +66,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // 6. Thêm sản phẩm vào đơn hàng
         $note = "Cập nhật hóa đơn: $invoice_no";
         foreach ($items as $item) {
-            $subtotal = $item['quantity'] * $item['selling_price'];
+            $subtotal = $item['quantity'] * $item['selling_prices'][$item["choice"]-1];
 
             // Insert Item
-            $stmtInsertItem->execute([
-                $order_id, $item['product_id'], $item['name'], $item['unit'], 
-                $item['quantity'], $item['cost_price'], $item['selling_price'], $subtotal
-            ]);
+            $stmtInsertItem->execute([$order_id, $item['product_id'], $item['name'], $item['unit'], $item['quantity'], $item['cost_price'], $item['selling_prices'][0], $item['selling_prices'][1], $item['choice'], $subtotal]);
 
             // Reduce Stock
             $stmtReduceStock->execute([$item['quantity'], $item['product_id']]);

@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $cost_amount = 0;
         // Duyệt qua thông tin từng sản phẩm
         foreach ($items as $item) {
-            $total_amount += $item['quantity'] * $item['selling_price'];
+            $total_amount += $item['quantity'] * $item['selling_prices'][$item["choice"]-1];
             $cost_amount += $item['quantity'] * $item['cost_price'];
         }
         $profit_amount = $total_amount - $cost_amount;
@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $order_id = $pdo->lastInsertId();
 
         // Lưu thông tin sản phẩm trong hóa đơn
-        $stmtItem = $pdo->prepare("INSERT INTO order_items (order_id, product_id, name, unit, quantity, cost_price, selling_price, subtotal) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmtItem = $pdo->prepare("INSERT INTO order_items (order_id, product_id, name, unit, quantity, cost_price, selling_price_1, selling_price_2, choice, subtotal) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         // Trừ trong kho
         $stmtStock = $pdo->prepare("UPDATE products SET stock_quantity = stock_quantity - ? WHERE id = ?");
         // Ghi nhật ký trong kho
@@ -54,9 +54,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $note = "Xuất kho: $invoice_no";
 
         foreach ($items as $item) {
-            $subtotal = $item['quantity'] * $item['selling_price'];
+            $subtotal = $item['quantity'] * $item['selling_prices'][$item["choice"]-1];
             
-            $stmtItem->execute([$order_id, $item['product_id'], $item['name'], $item['unit'], $item['quantity'], $item['cost_price'], $item['selling_price'], $subtotal]);
+            $stmtItem->execute([$order_id, $item['product_id'], $item['name'], $item['unit'], $item['quantity'], $item['cost_price'], $item['selling_prices'][0], $item['selling_prices'][1], $item['choice'], $subtotal]);
             $stmtStock->execute([$item['quantity'], $item['product_id']]);
             $stmtLog->execute([$item['product_id'], $item['quantity'], $order_id, $note]);
         }
