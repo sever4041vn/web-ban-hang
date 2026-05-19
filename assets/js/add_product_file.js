@@ -36,13 +36,14 @@ addProductFile.addEventListener("submit", async (e)=>{
             }, 3000);
         }
     } catch (error) {
+        warning.remove()
         console.log(error)
         const div = document.createElement("div")
-        div.className = "alert alert-success";
+        div.className = "alert alert-danger";
         div.innerHTML = "Lỗi kết nối máy chủ";
         responseMessageFile.appendChild(div);
         setTimeout(() => {
             div.remove();
-        }, 3000);
+        }, 10000);
     }
 })

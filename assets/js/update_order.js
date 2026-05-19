@@ -146,7 +146,7 @@ const addToTable = (data) => {
                                         </div>
                                     </td>
                                     <td>                 
-                                        <p class="mb-0 form-control cost-price-input-p" data-price="0" data-show="true">* ₫</p>
+                                        <p class="mb-0 form-control cost-price-input-p" data-price="${item["cost_price"]}" data-show="true">* ₫</p>
                                         <input type="hidden" class="form-control cost-price" value="${item["cost_price"]}" onchange="calculateRow(this)">
                                         <button class="btn btn-sm btn-outline-warning" onclick="showCostPrice(this)">Hiện giá nhập</button>    
                                     </td>
