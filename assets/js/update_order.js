@@ -58,6 +58,7 @@ const addToTable = (data) => {
         tr.innerHTML = `
                                 <td class="d-none">
                                     <input class="id form-control" type="number">
+                                    <input class="isChanged" type="checkbox">
                                 </td>
                                 <td class="position-relative">
                                     <input oninput="searchProducts(event)" class="name form-control" type="text">
@@ -107,11 +108,12 @@ const addToTable = (data) => {
     }else{
 
         data.forEach(item=>{
-            console.log(item)
+            // console.log(item)
             const tr = document.createElement("tr");
             tr.innerHTML = `
                                     <td class="d-none">
                                         <input class="id form-control" type="number" value="${item["product_id"]}">
+                                        <input class="isChanged" type="checkbox" checked>
                                     </td>
                                     <td class="position-relative">
                                         <input oninput="searchProducts(event)" class="name form-control" type="text" value="${item["name"]}">
@@ -225,6 +227,7 @@ const addToRow = (e, data) => {
     selectProductCache = [];
     const row = e.target.closest('tr');
     const id = row.querySelector(".id");
+    const isChanged = row.querySelector(".isChanged");
     const name = row.querySelector(".name");
     const unit = row.querySelector(".unit");
     const cost_price_p = row.querySelector(".cost-price-input-p");
@@ -249,7 +252,12 @@ const addToRow = (e, data) => {
     }
     // console.log(data)
     calculateRow(e.target);
-    addToTable();
+    if (!isChanged.checked) {
+        addToTable();
+        isChanged.checked = true;
+    }
+    row.querySelector(".qty-input").focus();
+    row.querySelector(".qty-input").select();
 } 
 
 const updateSubTotal = (e) => {
