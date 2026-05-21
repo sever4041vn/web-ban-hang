@@ -32,7 +32,7 @@ const getProducts = async (search, page) => {
                 const profitTotalSpan = profitTotal>0?`<span data-price="${profitTotal}" class="profit badge bg-success">*</span>`:`<span data-price="${profitTotal}" class="profit badge bg-danger">*</span>`;
                 products = products + `<tr id=${product["id"]} data-id=${product["id"]}>
                 <td>${product["sku"]}</td>
-                <td>${product["name"]}</td>
+                <td ondblclick="changeNameFocus(this)" class="product_name" data-name="${product["name"]}">${product["name"]}</td>
                 <td ondblclick="changeStockFocus(this)" class="stock_quantity" data-stock="${parseFloat(product["stock_quantity"])}">${parseFloat(product["stock_quantity"])}</td>
                 <td>${product["unit"]}</td>
                 <td ondblclick="changePriceFocus(this)" class="cost_price" data-price="${product["cost_price"]}" data-show="true">
@@ -99,7 +99,20 @@ const changeStockFocus = (target) => {
     target.appendChild(input);
     input.focus();
     input.addEventListener("focusout",()=>changeStock(product_id,input.value))
-
+}
+//CHỉnh sửa tên hàng
+const changeNameFocus = (target) => {
+    const product = target.parentElement
+    const product_id = product.getAttribute("data-id")
+    const product_name = product.getElementsByClassName("product_name")[0].getAttribute("data-name")
+    target.innerHTML = "";
+    const input = document.createElement("input");
+    input.className = "form-control";
+    input.style.width = "110px"
+    input.value = target.getAttribute("data-name");
+    target.appendChild(input);
+    input.focus();
+    input.addEventListener("focusout",()=>changeName(product_id,input.value))
 }
 //CHỉnh sửa giá
 const changePriceFocus = (target) => {
@@ -219,7 +232,49 @@ const changeStock = async (product_id, stock_quantity) => {
     }
     getProducts(searchValue,page)
 }
+//Thay đổi tên
+const changeName = async (product_id, product_name) => {
+    // console.log(product_id, product_name)
+    try {
+        const formData = new FormData;
+        formData.append("product_id",product_id);
+        formData.append("product_name",product_name);
 
+        response = await fetch(`actions/update_name.php`,{
+            method:"POST",
+            body: formData
+        });
+
+        const result = await response.json(); // Đợi phản hồi JSON từ PHP
+        if (result.status === 'success') {
+            const div = document.createElement("div")
+            div.className = "alert alert-success";
+            div.innerHTML = result.message;
+            responseMessage.appendChild(div);
+            setTimeout(() => {
+                div.remove();
+            }, 3000);
+        } else {
+            const div = document.createElement("div")
+            div.className = "alert alert-danger";
+            div.innerHTML = result.message;
+            responseMessage.appendChild(div);
+            setTimeout(() => {
+                div.remove();
+            }, 3000);
+        }
+    } catch (error) {
+        console.log(error)
+        const div = document.createElement("div")
+        div.className = "alert alert-success";
+        div.innerHTML = "Lỗi kết nối máy chủ";
+        responseMessage.appendChild(div);
+        setTimeout(() => {
+            div.remove();
+        }, 3000);
+    }
+    getProducts(searchValue,page)
+}
 function formatCurrency(input) {
     // console.log(input)
     let value = input.value;
