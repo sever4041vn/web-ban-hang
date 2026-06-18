@@ -67,6 +67,15 @@
                                     </tr>
                                     <tr>
                                         <td colspan="3" class="text-end fw-bold">
+                                            <input id="label_3" type="text" class="form-control" style="text-align: right" value="Đã thanh toán:">
+                                        </td>
+                                        <td colspan="2" class="text-success fw-bold h5" id="paidDisplay">
+                                            <input type="text" class="form-control amount" value = "0" oninput="formatCurrency(this); updateTotal()">
+                                            <input id="paid" type="hidden" class="form-control" value = "0">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" class="text-end fw-bold">
                                             <input id="label_2" type="text" class="form-control" style="text-align: right" value="Tổng cộng thanh toán: ">
                                         </td>
                                         <td colspan="2" class="text-success fw-bold h5" id="paidDisplay">

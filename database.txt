@@ -104,3 +104,7 @@ ALTER TABLE `products` ADD `selling_price_2` DECIMAL(15,2) NULL DEFAULT '0.00' A
 ALTER TABLE `order_items` CHANGE `selling_price` `selling_price_1` DECIMAL(15,2) NULL DEFAULT '0.00';
 ALTER TABLE `order_items` ADD `selling_price_2` DECIMAL(15,2) NULL DEFAULT '0.00' AFTER `selling_price_1`;
 ALTER TABLE `order_items` ADD `choice` INT(1) NOT NULL DEFAULT '1' AFTER `selling_price_2`;
+
+---18/6/2026
+ALTER TABLE `orders` ADD `extra_label_3` VARCHAR(255) NULL DEFAULT NULL AFTER `debt_amount`;
+ALTER TABLE `orders` CHANGE `paid_amount` `paid_amount` DECIMAL(15,2) NULL DEFAULT '0.00' AFTER `extra_label_3`;

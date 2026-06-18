@@ -14,7 +14,9 @@ async function loadOrders(customer_name) {
                     <td><small>${new Date(o.created_at).toLocaleString('vi-VN')}</small></td>
                     <td>${o.customer_name!=""?o.customer_name:o.customer_name_real}</td>
                     <td>${o.address}</td>
-                    <td class="fw-bold text-success">${Number(o.final_amount).toLocaleString()} ₫</td>
+                    <td class="fw-bold text-success">${Number(o.total_amount).toLocaleString()} ₫</td>
+                    <td class="fw-bold text-success">${Number(o.extra_value_1).toLocaleString()} ₫</td>
+                    <td class="fw-bold text-success">${Number(o.paid_amount).toLocaleString()} ₫</td>
                     <td class="fw-bold text-success">${Number(o.debt_amount).toLocaleString()} ₫</td>
                     <td class="text-center">
                         <a href="print_invoice.php?invoice_no=${o.invoice_no}" class="btn btn-sm btn-outline-secondary" title="Xem & In">

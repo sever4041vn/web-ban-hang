@@ -31,15 +31,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
         for ($i = 1; $i < count($rows); $i++) {
             $cells = $rows[$i];
             if (empty($cells[0])) continue;
-
+            $cost_price = str_replace('.', '', $cells[4]);
+            $cost_price = str_replace(',','.', $cost_price);
+            $selling_price_1 = str_replace('.', '', $cells[5]);
+            $selling_price_1 = str_replace(',','.', $selling_price_1);
+            $selling_price_2 = str_replace('.', '', $cells[6]);
+            $selling_price_2 = str_replace(',','.', $selling_price_2);
             $stmt->execute([
                 ':sku'  => $cells[0],
                 ':name' => $cells[1],
                 ':qty'  => (float)$cells[2],
                 ':unit' => $cells[3],
-                ':cost' => str_replace(['.', ','], '', $cells[4]),
-                ':selling_1' => str_replace(['.', ','], '', $cells[5]),
-                ':selling_2' => str_replace(['.', ','], '', $cells[6]),
+                ':cost' =>  $cost_price,
+                ':selling_1' =>  $selling_price_1,
+                ':selling_2' =>  $selling_price_2,
             ]);
             $count++;
         }

@@ -305,6 +305,7 @@ function updateTotal() {
     let totalDisplay = document.getElementById('totalDisplay')
     let amount1 = document.getElementById('amount_1')
     let amount2 = document.getElementById('amount_2')
+    let paid = document.getElementById('paid')
     document.querySelectorAll('#invoiceItems tr').forEach(row => {
         const qty = row.querySelector('.qty-input').value;
         const selling_prices = row.querySelectorAll('.selling-price');
@@ -316,7 +317,7 @@ function updateTotal() {
         }
     });
     totalDisplay.innerText = (total).toLocaleString('vi-VN') + " ₫";
-    amount2.parentNode.querySelector(".amount").value = total + (amount1.value)*1
+    amount2.parentNode.querySelector(".amount").value = total + (amount1.value)*1 - (paid.value)*1
     formatCurrency(amount2.parentNode.querySelector(".amount"))
 }
 
@@ -347,11 +348,16 @@ const updateTable = async () => {
                 label1.value = orderJson["extra_label_1"]
                 let label2 = document.getElementById('label_2')
                 label2.value = orderJson["extra_label_2"]
+                let label3 = document.getElementById('label_3')
+                label3.value = orderJson["extra_label_3"]
                 let amount1 = document.getElementById('amount_1')
                 amount1.parentNode.querySelector(".amount").value = Math.trunc(orderJson["extra_value_1"])
+                let paid = document.getElementById('paid')
+                paid.parentNode.querySelector(".amount").value = Math.trunc(orderJson["paid_amount"])
                 let amount2 = document.getElementById('amount_2')
                 amount2.parentNode.querySelector(".amount").value = Math.trunc(orderJson["debt_amount"])
                 formatCurrency(amount1.parentNode.querySelector(".amount"))
+                formatCurrency(paid.parentNode.querySelector(".amount"))
                 formatCurrency(amount2.parentNode.querySelector(".amount"))
                 updateTotal()
             }else{
@@ -406,7 +412,9 @@ async function submitInvoice() {
         extra_label_1: document.getElementById("label_1").value,
         extra_value_1: document.getElementById("amount_1").value,
         extra_label_2: document.getElementById("label_2").value,
-        debt_amount: document.getElementById("amount_2").value
+        debt_amount: document.getElementById("amount_2").value,
+        extra_label_3: document.getElementById("label_3").value,
+        paid_amount: document.getElementById("paid").value
     }
     const formData = new FormData;
     formData.append("invoice_no",invoice_no)

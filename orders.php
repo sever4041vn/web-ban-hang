@@ -28,6 +28,8 @@
                             <th>Địa Chỉ</th>
                             <th>Tổng Tiền Toa Hàng</th>
                             <th>Tổng Tiền Nợ trước</th>
+                            <th>Đã Thanh Toán</th>
+                            <th>Cần Thanh Toán Còn Lại</th>
                             <th class="text-center">Thao Tác</th>
                         </tr>
                     </thead>
