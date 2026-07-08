@@ -3,6 +3,42 @@ require_once '../config/db.php';
 require_once './libs/SimpleXLSX.php';
 
 use Shuchkin\SimpleXLSX;
+function parsePrice($value)
+{
+    if (is_numeric($value)) {
+        return (float)$value;
+    }
+
+    $value = trim((string)$value);
+
+    if ($value === '') {
+        return null;
+    }
+
+    $lastComma = strrpos($value, ',');
+    $lastDot   = strrpos($value, '.');
+
+    if ($lastComma !== false && $lastDot !== false) {
+        // Dấu xuất hiện sau cùng được xem là dấu thập phân
+        if ($lastComma > $lastDot) {
+            // 18.000,3
+            $value = str_replace('.', '', $value);
+            $value = str_replace(',', '.', $value);
+        } else {
+            // 18,000.3
+            $value = str_replace(',', '', $value);
+        }
+    } elseif ($lastComma !== false) {
+        // 18000,3
+        $value = str_replace(',', '.', $value);
+    } elseif (substr_count($value, '.') > 1) {
+        // 18.000.000
+        $value = str_replace('.', '', $value);
+    }
+
+    return (float)$value;
+}
+
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
     try {
@@ -33,10 +69,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
             if (empty($cells[0])) continue;
             $cost_price = str_replace('.', '', $cells[4]);
             $cost_price = str_replace(',','.', $cost_price);
-            $selling_price_1 = str_replace('.', '', $cells[5]);
-            $selling_price_1 = str_replace(',','.', $selling_price_1);
-            $selling_price_2 = str_replace('.', '', $cells[6]);
-            $selling_price_2 = str_replace(',','.', $selling_price_2);
+            $selling_price_1 = parsePrice($cells[5]);
+            $selling_price_2 = parsePrice($cells[6]);
             $stmt->execute([
                 ':sku'  => $cells[0],
                 ':name' => $cells[1],
