@@ -53,19 +53,19 @@ CREATE TABLE orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
     invoice_no VARCHAR(50) UNIQUE NOT NULL, -- Số hóa đơn (VD: HD20240212001)
     customer_id INT,
-    customer_name VARCHAR(255) NOT NULL
+    customer_name VARCHAR(255) NOT NULL,
     address VARCHAR(100) DEFAULT NULL,
     total_amount DECIMAL(15, 2) NOT NULL,
     discount DECIMAL(15, 2) DEFAULT 0,
     final_amount DECIMAL(15, 2) NOT NULL, -- Tổng tiền sau chiết khấu
     profit_amount DECIMAL(15, 2) NOT NULL, -- Tổng tiền sau chiết khấu
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (customer_id) REFERENCES customers(id)
+    FOREIGN KEY (customer_id) REFERENCES customers(id),
     paid_amount DECIMAL(15,2) DEFAULT 0,  -- Số tiền đã trả
     extra_label_1 VARCHAR(255) DEFAULT NULL, -- Nội dung dòng 1 (VD: Nợ cũ)
     extra_value_1 DECIMAL(15,2) DEFAULT 0,    -- Số tiền dòng 1 (VD: 500000)
     extra_label_2 VARCHAR(255) DEFAULT NULL, -- Nội dung dòng 2 (VD: Phí vận chuyển)
-    debt_amount DECIMAL(15,2) DEFAULT 0,  -- Số tiền còn nợ
+    debt_amount DECIMAL(15,2) DEFAULT 0  -- Số tiền còn nợ
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 6. Chi tiết hóa đơn (Để lưu từng món trong 1 hóa đơn)
@@ -96,15 +96,18 @@ CREATE TABLE inventory_log (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
---8/5/2026
+-- 8/5/2026
 ALTER TABLE `products` CHANGE `selling_price` `selling_price_1` DECIMAL(15,2) NULL DEFAULT '0.00';
 ALTER TABLE `products` ADD `selling_price_2` DECIMAL(15,2) NULL DEFAULT '0.00' AFTER `selling_price_1`;
 
---9/5
+-- 9/5
 ALTER TABLE `order_items` CHANGE `selling_price` `selling_price_1` DECIMAL(15,2) NULL DEFAULT '0.00';
 ALTER TABLE `order_items` ADD `selling_price_2` DECIMAL(15,2) NULL DEFAULT '0.00' AFTER `selling_price_1`;
 ALTER TABLE `order_items` ADD `choice` INT(1) NOT NULL DEFAULT '1' AFTER `selling_price_2`;
 
----18/6/2026
+-- 18/6/2026
 ALTER TABLE `orders` ADD `extra_label_3` VARCHAR(255) NULL DEFAULT NULL AFTER `debt_amount`;
 ALTER TABLE `orders` CHANGE `paid_amount` `paid_amount` DECIMAL(15,2) NULL DEFAULT '0.00' AFTER `extra_label_3`;
+
+-- 7/8/2026
+ALTER TABLE `orders` ADD `date_custom` VARCHAR(255) NOT NULL AFTER `paid_amount`;
