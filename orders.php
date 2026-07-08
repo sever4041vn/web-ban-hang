@@ -36,6 +36,11 @@
                     <tbody id="orderTableBody">
                         </tbody>
                 </table>
+                <div class="text-center mt-2">
+                    <button id="loadMoreOrdersBtn" class="btn btn-outline-secondary" style="display:none" onclick="loadMoreOrders()">
+                        Tải thêm hóa đơn cũ hơn
+                    </button>
+                </div>
             </div>
         </div>
     </div>

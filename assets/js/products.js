@@ -2,9 +2,12 @@ const productsDiv = document.getElementById("products");
 const search = document.getElementById("search");
 let searchValue = search.value
 let page = 1
+// debounce 300ms: chỉ gọi API sau khi người dùng ngừng gõ, tránh bắn 1 request
+// mỗi lần nhấn phím (nguyên nhân chính gây giật khi gõ tìm kiếm)
+const debouncedGetProducts = debounce(() => getProducts(searchValue, page), 300)
 search.addEventListener("input", ()=>{
     searchValue = search.value
-    getProducts(searchValue,page)
+    debouncedGetProducts()
 })
 
 
@@ -12,10 +15,12 @@ search.addEventListener("input", ()=>{
 const getProducts = async (search, page) => {
     try {
         let response;
+        // abortableFetch: nếu người dùng gõ tiếp trước khi request cũ trả lời xong,
+        // request cũ sẽ bị hủy -> tránh kết quả cũ "về trễ" ghi đè kết quả mới
         if (search!="") {
-            response = await fetch(`actions/get_product.php?search=${search}`);
+            response = await abortableFetch("products", `actions/get_product.php?search=${encodeURIComponent(search)}`);
         }else{
-            response = await fetch(`actions/get_product.php?page=${page}`);
+            response = await abortableFetch("products", `actions/get_product.php?page=${page}`);
         }
 
         const result = await response.json(); // Đợi phản hồi JSON từ PHP

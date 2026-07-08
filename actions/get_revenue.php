@@ -6,27 +6,31 @@ $from_date = $_GET['from_date'] ?? date('Y-m-01'); // Mặc định từ đầu 
 $to_date = $_GET['to_date'] ?? date('Y-m-d');     // Mặc định đến hôm nay
 
 try {
-    // 1. Tính tổng doanh thu trong khoảng thời gian
-    $sqlTotal = "SELECT SUM(final_amount) as total FROM orders 
-                 WHERE DATE(created_at) BETWEEN ? AND ?";
-    $stmtTotal = $pdo->prepare($sqlTotal);
-    $stmtTotal->execute([$from_date, $to_date]);
-    $totalRevenue = $stmtTotal->fetch()['total'] ?? 0;
-    // 2. Tính tổng lợi nhuận
-    $sqlProfit = "SELECT SUM(profit_amount) as total FROM orders 
-                 WHERE DATE(created_at) BETWEEN ? AND ?";
-    $stmtProfit = $pdo->prepare($sqlProfit);
-    $stmtProfit->execute([$from_date, $to_date]);
-    $totalProfit = $stmtProfit->fetch()['total'] ?? 0;
+    // Dùng khoảng nửa-mở [from, to+1day) thay vì bọc DATE(created_at):
+    // bọc hàm DATE() quanh cột created_at khiến MySQL KHÔNG dùng được index
+    // idx_orders_created_at (phải scan toàn bảng để tính DATE() cho từng dòng).
+    // So sánh trực tiếp created_at >= ? AND created_at < ? thì dùng được index.
+    $from = $from_date . ' 00:00:00';
+    $to = date('Y-m-d', strtotime($to_date . ' +1 day')) . ' 00:00:00';
 
-    // 2. Lấy danh sách các hóa đơn trong khoảng thời gian đó để hiển thị bên dưới
+    // Gộp 2 query SUM (doanh thu + lợi nhuận) thành 1 query duy nhất
+    // -> giảm 1 round-trip tới DB mỗi lần xem báo cáo
+    $sqlTotal = "SELECT SUM(final_amount) as total_revenue, SUM(profit_amount) as total_profit
+                 FROM orders WHERE created_at >= ? AND created_at < ?";
+    $stmtTotal = $pdo->prepare($sqlTotal);
+    $stmtTotal->execute([$from, $to]);
+    $totals = $stmtTotal->fetch();
+    $totalRevenue = $totals['total_revenue'] ?? 0;
+    $totalProfit = $totals['total_profit'] ?? 0;
+
+    // Danh sách hóa đơn trong khoảng thời gian để hiển thị bên dưới
     $sqlOrders = "SELECT invoice_no, created_at, final_amount, profit_amount
                   FROM orders 
-                  WHERE DATE(created_at) BETWEEN ? AND ? 
+                  WHERE created_at >= ? AND created_at < ?
                   ORDER BY created_at DESC";
     $stmtOrders = $pdo->prepare($sqlOrders);
-    $stmtOrders->execute([$from_date, $to_date]);
-    $orders = $stmtOrders->fetchAll(PDO::FETCH_ASSOC);
+    $stmtOrders->execute([$from, $to]);
+    $orders = $stmtOrders->fetchAll();
 
     echo json_encode([
         'status' => 'success',

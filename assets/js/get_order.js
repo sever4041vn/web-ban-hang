@@ -1,10 +1,21 @@
-async function loadOrders(customer_name) {
+let currentOrderPage = 1;
+let currentOrderSearch = "";
+
+async function loadOrders(customer_name, page = 1, append = false) {
     try {
-        const response = await fetch(`actions/get_order.php?customer_name=${customer_name}`);
+        currentOrderSearch = customer_name;
+        currentOrderPage = page;
+        // Trước đây API này trả về TOÀN BỘ bảng orders mỗi lần mở trang / tìm kiếm.
+        // Giờ có phân trang (30 đơn/lần) để trang tải nhanh, có nút "Tải thêm" bên dưới
+        // cho các đơn hàng cũ hơn khi cần.
+        const response = await abortableFetch("orders-list", `actions/get_order.php?customer_name=${encodeURIComponent(customer_name)}&page=${page}`);
         const orders = await response.json();
         const tbody = document.getElementById('orderTableBody');
-        tbody.innerHTML = '';
-        JSON.parse(orders.message).forEach(o => {
+        if (!append) {
+            tbody.innerHTML = '';
+        }
+        const list = JSON.parse(orders.message);
+        list.forEach(o => {
             // Định dạng mã hóa đơn có số 0 phía trước nếu cần (ví dụ ID thành 4 số)
             const formattedId = o.id.toString().padStart(4, '0');
             
@@ -29,13 +40,28 @@ async function loadOrders(customer_name) {
                 </tr>
             `;
         });
+
+        // Hiện/ẩn nút "Tải thêm" tùy còn dữ liệu hay không (nếu trả về đủ 30 dòng,
+        // khả năng còn trang tiếp theo)
+        const loadMoreBtn = document.getElementById('loadMoreOrdersBtn');
+        if (loadMoreBtn) {
+            loadMoreBtn.style.display = (list.length < 30) ? 'none' : 'inline-block';
+        }
     } catch (err) {
-        console.error("Lỗi:", err);
+        if (err.name !== 'AbortError') {
+            console.error("Lỗi:", err);
+        }
     }
+}
+
+function loadMoreOrders() {
+    loadOrders(currentOrderSearch, currentOrderPage + 1, true);
 }
 
 document.addEventListener('DOMContentLoaded', ()=>loadOrders(""));
 
+// debounce 300ms: tránh gọi API mỗi lần gõ 1 ký tự khi tìm hóa đơn
+const debouncedSearchOrder = debounce(() => loadOrders(document.getElementById("search").value, 1, false), 300)
 const searchOrder = () => {
-    loadOrders(document.getElementById("search").value)
+    debouncedSearchOrder()
 }

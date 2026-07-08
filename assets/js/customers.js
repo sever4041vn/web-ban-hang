@@ -1,18 +1,21 @@
 const customersDiv = document.getElementById("customers");
 const search = document.getElementById("search");
 let searchValue = search.value
+// debounce 300ms tránh gọi API liên tục khi gõ nhanh
+const debouncedGetCustomers = debounce(() => getCustomers(searchValue), 300)
 search.addEventListener("input", ()=>{
     searchValue = search.value
-    getCustomers(searchValue)
+    debouncedGetCustomers()
 })
 //Lấy khách hàng
 const getCustomers = async (search) => {
     try {
         let response;
+        // hủy request cũ nếu người dùng gõ tiếp, tránh kết quả cũ về trễ ghi đè kết quả mới
         if (search!="") {
-            response = await fetch(`actions/get_customer.php?search=${search}`);
+            response = await abortableFetch("customers", `actions/get_customer.php?search=${encodeURIComponent(search)}`);
         }else{
-            response = await fetch(`actions/get_customer.php`);
+            response = await abortableFetch("customers", `actions/get_customer.php`);
         }
 
         const result = await response.json(); // Đợi phản hồi JSON từ PHP

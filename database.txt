@@ -111,3 +111,19 @@ ALTER TABLE `orders` CHANGE `paid_amount` `paid_amount` DECIMAL(15,2) NULL DEFAU
 
 -- 7/8/2026
 ALTER TABLE `orders` ADD `date_custom` VARCHAR(255) NOT NULL AFTER `paid_amount`;
+-- ================================================
+-- TỐI ƯU HÓA HIỆU NĂNG (chạy đoạn này trong phpMyAdmin -> SQL để áp dụng)
+-- Thêm index cho các cột thường xuyên WHERE / ORDER BY / LIKE
+-- giúp các trang Sản phẩm, Khách hàng, Đơn hàng, Báo cáo tải nhanh hơn
+-- đặc biệt khi dữ liệu đã có vài nghìn dòng trở lên.
+-- ================================================
+
+ALTER TABLE `products` ADD INDEX `idx_products_name` (`name`);
+ALTER TABLE `products` ADD INDEX `idx_products_sku` (`sku`);
+
+ALTER TABLE `customers` ADD INDEX `idx_customers_name` (`name`);
+
+ALTER TABLE `orders` ADD INDEX `idx_orders_customer_name` (`customer_name`);
+ALTER TABLE `orders` ADD INDEX `idx_orders_created_at` (`created_at`);
+
+ALTER TABLE `inventory_log` ADD INDEX `idx_log_type_created` (`type`, `created_at`);

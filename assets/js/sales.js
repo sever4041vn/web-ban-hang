@@ -12,14 +12,14 @@ document.addEventListener("keypress",(e)=>{
 document.querySelector(".name").addEventListener("focusin", (e)=>toggleShowSearchBox(e.target,"show"))
 document.querySelector(".name").addEventListener("focusout", (e)=>toggleShowSearchBox(e.target,"hide"))
 
-const searchCustomers = async (e) => {
+const searchCustomersImmediate = async (e) => {
     let searchBox = e.target.parentNode.querySelector(".search-box");
     e.target.parentNode.parentNode.querySelector(".id").value = 1
     const search = e.target.value;
     let customers = []
     let customerOption = '';
     try {
-        const response = await fetch(`actions/get_customer.php?search=${search}`);
+        const response = await abortableFetch("sales-customers", `actions/get_customer.php?search=${encodeURIComponent(search)}`);
         const result = await response.json(); // Đợi phản hồi JSON từ PHP
         if (result.status === 'success') {
             customers= JSON.parse(result.message);
@@ -40,6 +40,8 @@ const searchCustomers = async (e) => {
         searchBox.innerHTML = customerOption;
     }
 }
+// debounce: chỉ gọi API sau khi ngừng gõ ~250ms
+const searchCustomers = debounce(searchCustomersImmediate, 250)
 
 const setId = (e, customer) => {
     e.target.parentNode.parentNode.querySelector(".id").value = customer[0]
@@ -117,7 +119,7 @@ const toggleShowSearchBox = (target,action) => {
     }
 }
 
-const searchProducts = async (e) => {
+const searchProductsImmediate = async (e) => {
     let searchBox = e.target.parentNode.querySelector(".search-box");
     const search = e.target.value;
     const id = e.target.closest("tr").querySelector(".id");
@@ -138,7 +140,7 @@ const searchProducts = async (e) => {
     let products = []
     let productOption = '';
     try {
-        const response = await fetch(`actions/get_product.php?search=${search}`);
+        const response = await abortableFetch("sales-products", `actions/get_product.php?search=${encodeURIComponent(search)}`);
         const result = await response.json(); // Đợi phản hồi JSON từ PHP
         if (result.status === 'success') {
             products= JSON.parse(result.message);
@@ -159,6 +161,8 @@ const searchProducts = async (e) => {
         searchBox.innerHTML = productOption;
     }
 }
+// debounce: chỉ gọi API sau khi ngừng gõ ~250ms, tránh giật khi thêm sản phẩm vào hóa đơn
+const searchProducts = debounce(searchProductsImmediate, 250)
 
 const addToRow = (e, data) => {
     selectProductCache = [];
