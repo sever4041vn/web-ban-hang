@@ -26,9 +26,9 @@ async function loadOrders(customer_name, page = 1, append = false) {
                     <td>${o.customer_name!=""?o.customer_name:o.customer_name_real}</td>
                     <td>${o.address}</td>
                     <td class="fw-bold text-success">${Number(o.total_amount).toLocaleString()} ₫</td>
-                    <td class="fw-bold text-success">${Number(o.extra_value_1).toLocaleString()} ₫</td>
-                    <td class="fw-bold text-success">${Number(o.paid_amount).toLocaleString()} ₫</td>
-                    <td class="fw-bold text-success">${Number(o.debt_amount).toLocaleString()} ₫</td>
+                    <td class="fw-bold text-info">${Number(o.extra_value_1).toLocaleString()} ₫</td>
+                    <td class="fw-bold">${Number(o.paid_amount).toLocaleString()} ₫</td>
+                    <td class="fw-bold ${o.debt_amount==0?"text-success":"text-danger"}">${Number(o.debt_amount).toLocaleString()} ₫</td>
                     <td class="text-center">
                         <a href="print_invoice.php?invoice_no=${o.invoice_no}" class="btn btn-sm btn-outline-secondary" title="Xem & In">
                             <i class="bi bi-printer"></i> Xem lại
