@@ -138,13 +138,13 @@ const addToTable = (data) => {
                                     </td>
                                     <td class="subtotal fw-bold">
                                         <div class="form-check m-0">
-                                            <input style="cursor: pointer;" class="form-check-input price-radio" type="radio" id="price_1" value="${item["selling_price_1"]*item["quantity"]}" onchange="updateSubTotal(event);" checked>
+                                            <input style="cursor: pointer;" class="form-check-input price-radio" type="radio" id="price_1" value="${item["selling_price_1"]*item["quantity"]}" onchange="updateSubTotal(event);" ${item["choice"]==1?"checked":""}>
                                             <label class="form-check-label text-primary" >
                                                 <p class="subtotal_choice">${Number(item["selling_price_1"]*item["quantity"]).toLocaleString('vi-VN')} ₫</p>
                                             </label>
                                         </div>
                                         <div class="form-check m-0">
-                                            <input style="cursor: pointer;" class="form-check-input price-radio" type="radio" id="price_2" value="${item["selling_price_2"]*item["quantity"]}" onchange="updateSubTotal(event);">
+                                            <input style="cursor: pointer;" class="form-check-input price-radio" type="radio" id="price_2" value="${item["selling_price_2"]*item["quantity"]}" onchange="updateSubTotal(event);"  ${item["choice"]==2?"checked":""}>
                                             <label class="form-check-label text-success">
                                                 <p class="subtotal_choice">${Number(item["selling_price_2"]*item["quantity"]).toLocaleString('vi-VN')} ₫</p>
                                             </label>
