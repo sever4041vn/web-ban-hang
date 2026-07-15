@@ -322,7 +322,7 @@ function updateTotal() {
         }
     });
     totalDisplay.innerText = (total).toLocaleString('vi-VN') + " ₫";
-    amount2.parentNode.querySelector(".amount").value = total + (amount1.value)*1 - (paid.value)*1
+    amount2.parentNode.querySelector(".amount").value = Intl.NumberFormat('vi-VN').format(total + (amount1.value)*1 - (paid.value)*1)
     formatCurrency(amount2.parentNode.querySelector(".amount"))
 }
 
@@ -447,21 +447,26 @@ async function submitInvoice() {
 }
 
 function formatCurrency(input) {
+    const val = input.value;
+    const isNeg = val.startsWith('-');
     
-    let value = input.value;
+    // 1. Loại bỏ dấu trừ và các dấu chấm phân cách cũ
+    let clean = val.replace(/^-/, '').replace(/\./g, '');
+    let [intStr, decStr] = clean.split(',');
 
-    // 1. Kiểm tra xem có dấu trừ ở đầu không
-    const isNegative = value.startsWith('-');
+    // 2. Lọc sạch ký tự không phải số
+    intStr = intStr ? intStr.replace(/\D/g, '') : '';
+    decStr = decStr !== undefined ? decStr.replace(/\D/g, '') : null;
 
-    // 2. Lấy giá trị số (loại bỏ tất cả ký tự không phải số)
-    let digits = value.replace(/\D/g, "");
+    // 3. Định dạng hiển thị (vi-VN)
+    const formattedInt = intStr ? Number(intStr).toLocaleString('vi-VN') : '';
+    const display = formattedInt + (decStr !== null ? ',' + decStr : '');
+    input.value = (isNeg && (intStr || decStr !== null || val === '-')) ? '-' + display : display;
 
-    // 3. Định dạng phần số với dấu chấm hàng nghìn
-    let formatted = digits !== "" ? Number(digits).toLocaleString('vi-VN') : 0;
-
-    // 4. Ghép dấu trừ lại nếu có
-    input.value = (isNegative && (digits !== "" || value === "-")) ? "-" + formatted : formatted;
-
-    // 5. Lưu giá trị thực (số nguyên) vào ô ẩn để gửi lên PHP
-    input.parentNode.querySelectorAll("input")[1].value = isNegative ? "-" + digits : digits;
+    // 4. Lưu giá trị float thực tế (dấu chấm thập phân) vào input ẩn
+    const raw = intStr + (decStr ? '.' + decStr : '');
+    const hiddenInput = input.parentNode.querySelectorAll("input")[1];
+    if (hiddenInput) {
+        hiddenInput.value = (isNeg && raw) ? '-' + raw : raw;
+    }
 }
