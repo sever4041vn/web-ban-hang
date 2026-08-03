@@ -75,8 +75,8 @@ $items = $itemStmt->fetchAll();
                     <p style="font-size: smaller !important" class="mb-0 fs-6">ĐT: 0915 254 385(Hường) - 0989 048 997(Vương) </p>
                 </div>
                 <div class="col-5 fw-bold text-end">
-                    <p style="font-size: smaller !important" class="mb-0 fs-6">Số TK: 0271000214568, VCB,</p>
-                    <p style="font-size: smaller !important" class="mb-0 fs-6">Huỳnh Thị Mỹ Hường</p>
+                    <p style="font-size: smaller !important" class="mb-0 fs-6">Số TK: 1123456368368, MB BANK,</p>
+                    <p style="font-size: smaller !important" class="mb-0 fs-6">CTY TNHH MTV TM VA DV KHANH HONG</p>
                 </div>
             </div>
             <hr class="mt-1 mb-1">
