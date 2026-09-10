@@ -75,8 +75,8 @@ $items = $itemStmt->fetchAll();
                     <p style="font-size: smaller !important" class="mb-0 fs-6">ĐT: 0915 254 385(Hường) - 0989 048 997(Vương) </p>
                 </div>
                 <div class="col-5 fw-bold text-end">
-                    <p style="font-size: smaller !important" class="mb-0 fs-6">Số TK: 1123456368368, MB BANK,</p>
-                    <p style="font-size: smaller !important" class="mb-0 fs-6">CTY TNHH MTV TM VA DV KHANH HONG</p>
+                    <p style="font-size: x-small !important" class="mb-0 fs-6">CTY TNHH MTV TM VA DV KHANH HONG</p>
+                    <p style="font-size: smaller !important; text-align: center;" class="mb-0 fs-6">Số TK: 1123456368368, MB BANK</p>
                 </div>
             </div>
             <hr class="mt-1 mb-1">
@@ -125,25 +125,23 @@ $items = $itemStmt->fetchAll();
                         <td colspan="5" class="p-0 text-end fw-bold h10">Tổng toa hàng:</td>
                         <td class="p-0 text-end fw-bold h10"><?= number_format($order['final_amount'], 0, ',', '.') ?></td>
                     </tr>
-                    <tr id="label_1" style="display: <?php if ($order['extra_value_1'] != "0") {
-                                                            echo ("");
-                                                        } else {
-                                                            echo ("none");
-                                                        } ?>; text-align: right;">
+                    <tr id="label_1" style="display: none; text-align: right;">
                         <td colspan="5" class="p-0 text-end fw-bold h10"><?= $order['extra_label_1'] ?></td>
                         <td class="p-0 text-end fw-bold h10"><?= number_format($order['extra_value_1'], 0, ',', '.') ?></td>
                     </tr>
-                    <tr id="label_2" style="display: <?php if ($order['extra_value_1'] != "0") {
-                                                            echo ("");
-                                                        } else {
-                                                            echo ("none");
-                                                        } ?>; text-align: right;">
-                        <td colspan="5" class="p-0 text-end fw-bold h10"><?= $order['extra_label_2'] ?></td>
+                    <tr id="label_3" style="display: none; text-align: right;">
+                        <td colspan="5" class="p-0 text-end fw-bold h10"><?= $order['extra_label_3'] ?></td>
+                        <td class="p-0 text-end fw-bold h10"><?= number_format($order['paid_amount'], 0, ',', '.') ?></td>
+                    </tr>
+                    <tr>
+                        <td colspan="5" class="p-0 text-end fw-bold h10">Tổng cộng thanh toán:</td>
                         <td class="p-0 text-end fw-bold h10"><?= number_format($order['debt_amount'], 0, ',', '.') ?></td>
                     </tr>
                     <tr class="no-print">
                         <td colspan="5" class="p-0 text-end fw-bold h10">
-                            <button style="font-size: smaller !important;" onclick="showProfit()" class="btn">Hiện lợi nhuận</button>
+                            <button style="font-size: smaller !important;" onclick="showDebt()" class="btn">Ẩn/Hiện Tổng cộng nợ trước</button>
+                            <button style="font-size: smaller !important;" onclick="showPaid()" class="btn">Ẩn/Hiện Đã thanh toán</button>
+                            <button style="font-size: smaller !important;" onclick="showProfit()" class="btn">Ẩn/Hiện lợi nhuận</button>
                             Lợi nhuận:
                         </td>
                         <td id="profit-hide" class="p-0 text-end fw-bold h10">#</td>
@@ -177,9 +175,6 @@ $items = $itemStmt->fetchAll();
         </div>
     </div>
     <script>
-        let label1 = document.getElementById("label_1")
-        let label2 = document.getElementById("label_2")
-
         let datePrint = "<?php
 
                             $timestamp = strtotime($order['created_at']);
@@ -189,6 +184,23 @@ $items = $itemStmt->fetchAll();
                                 echo $order['date_custom'];
                             }
                             ?>"
+        const showDebt = () => {
+            let label1 = document.getElementById("label_1")
+            if (label1.style.display == "none") {
+                label1.style.display = ""
+            } else {
+                label1.style.display = "none"
+            }
+        }
+
+        const showPaid = () => {
+            let label3 = document.getElementById("label_3")
+            if (label3.style.display == "none") {
+                label3.style.display = ""
+            } else {
+                label3.style.display = "none"
+            }
+        }
         const showProfit = () => {
             profit_hide = document.getElementById("profit-hide");
             profit_show = document.getElementById("profit-show");
@@ -200,16 +212,6 @@ $items = $itemStmt->fetchAll();
                 profit_hide.style.display = "none";
             }
         }
-        document.addEventListener("keypress", (e) => {
-            // console.log(e.key)
-            if (e.key == "Enter") {
-                label1.style.display = ""
-                label2.style.display = ""
-            } else if (e.key == "x") {
-                label1.style.display = "none"
-                label2.style.display = "none"
-            }
-        })
         const changeDate = (target) => {
             target.innerHTML = "";
             const input = document.createElement("input");
