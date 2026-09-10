@@ -125,11 +125,11 @@ $items = $itemStmt->fetchAll();
                         <td colspan="5" class="p-0 text-end fw-bold h10">Tổng toa hàng:</td>
                         <td class="p-0 text-end fw-bold h10"><?= number_format($order['final_amount'], 0, ',', '.') ?></td>
                     </tr>
-                    <tr id="label_1" style="display: none; text-align: right;">
+                    <tr id="label_1" style="display: <?= $order['extra_value_1']!=0?"":"none"?>; text-align: right;">
                         <td colspan="5" class="p-0 text-end fw-bold h10"><?= $order['extra_label_1'] ?></td>
                         <td class="p-0 text-end fw-bold h10"><?= number_format($order['extra_value_1'], 0, ',', '.') ?></td>
                     </tr>
-                    <tr id="label_3" style="display: none; text-align: right;">
+                    <tr id="label_3" style="display: <?= $order['paid_amount']!=0?"":"none"?>; text-align: right;">
                         <td colspan="5" class="p-0 text-end fw-bold h10"><?= $order['extra_label_3'] ?></td>
                         <td class="p-0 text-end fw-bold h10"><?= number_format($order['paid_amount'], 0, ',', '.') ?></td>
                     </tr>
